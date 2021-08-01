@@ -49,5 +49,5 @@ jobs:
         run: |
           Rdevel -q -e "install.packages('tinytest')"
           Rdevel CMD build .
-          Rdevel CMD INSTALL --install-tests hutilscpp*.tar.gz
+          Rdevel CMD INSTALL --install-tests *.tar.gz
           Rdevel -q -e "tinytest::test_all()"
