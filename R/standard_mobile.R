@@ -1,0 +1,47 @@
+#' Standardize Australian mobilie phone numbers
+#'
+#' @param x A vector, generally a character vector, in which mobile numbers
+#' are expected.
+#'
+#' @param ignore_calling_code \code{logical(1)} Whether to ignore the calling code
+#' \code{+61} in the result.
+#'
+#' @return
+#' Mobile phone numbers are represented as integer vectors. International
+#' calling prefixes extend the number beyond the representation of signed
+#' integers. We use \code{raw} vectors for the international prefix, if required.
+#'
+#'
+#' If \code{ignore_calling_code = TRUE}, the integer vector is returned.
+#' Elements of \code{x} for which the mobile phone number could not be
+#' extracted map to \code{NA_integer_} in the result.
+#'
+#' If \code{ignore_calling_code = FALSE}, then a list is returned. The second element
+#' of the list is the calling prefix.
+#'
+#' If \code{ignore_calling_code = NA} then it is set to \code{TRUE} if \code{x}
+#' appears to have international prefixes already.
+#'
+#' @examples
+#' dauphin_mobile("0400 123 456")
+#' dauphin_mobile("+61400123456", ignore_calling_code = TRUE)
+#'
+#' @export
+
+dauphin_mobile <- function(x, ignore_calling_code = NA) {
+  cc_required <- .Call("C_CCRequired", x, ignore_calling_code, PACKAGE = packageName())
+  ans <- .Call("CStandardMobile", x, PACKAGE = packageName())
+  if (cc_required) {
+    return(.subset2(ans, 1L))
+  }
+  ans
+}
+
+dauphin_mobile_cc <- function(x) {
+  .Call("CStandardMobile", x, PACKAGE = packageName())
+}
+
+dauphin_mobile_landline <- function(mob, landline) {
+
+}
+

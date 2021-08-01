@@ -2,3 +2,9 @@
 .Rhistory
 .RData
 .Ruserdata
+*.*
+!*.c
+!*.R
+!*/R/*.R
+!*/src/*.c
+!*/src/*.h
