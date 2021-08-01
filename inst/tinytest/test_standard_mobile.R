@@ -13,3 +13,7 @@ expect_equal(dauphin_mobile1(c("+61401234234",
                444444444,
                NA,
                NA)[1:3])
+
+expect_equal(dauphin_mobile_landline("0400 000 000", "(03)9876 5432"),
+             list(400e6, 98765432))
+

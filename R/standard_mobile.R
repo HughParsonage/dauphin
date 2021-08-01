@@ -42,6 +42,8 @@ dauphin_mobile_cc <- function(x) {
 }
 
 dauphin_mobile_landline <- function(mob, landline) {
-
+  dmob <- .Call("CStandardMobile", mob, PACKAGE = packageName())
+  dhom <- .Call("CStandardHomePh", landline, PACKAGE = packageName())
+  .Call("C_iMobileiHome", dmob[[1]], dhom, PACKAGE = packageName())
 }
 

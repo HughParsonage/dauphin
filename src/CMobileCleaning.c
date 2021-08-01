@@ -129,6 +129,28 @@ int is_au_landline(const char * x, int n) {
   return 0;
 }
 
+int extract_mobile(const char * x, int n) {
+  const char prefixes[3] = {'0', '+', '6'};
+  for (int p = 0; p < 3; ++p) {
+    char prefix = prefixes[p];
+    int j_04mob = is_04mobile_from(x, n, prefix);
+    if (j_04mob) {
+      unsigned int mob_no = 400000000;
+      unsigned int ten = 1;
+      int left_j = prefix == '0' ? 2 : (prefix == '6' ? 3 : 4);
+      for (int j = j_04mob; j >= left_j; --j) {
+        if (mob_no > 499999999) {
+          break;
+        }
+        mob_no += ten * char2number(x[j]);
+        ten *= x[j] != ' ' ? 10 : 1;
+      }
+      return mob_no;
+    }
+  }
+  return NA_INTEGER;
+}
+
 
 SEXP CStandardMobile(SEXP xx) {
   if (!isString(xx)) {
@@ -190,7 +212,8 @@ SEXP CStandardMobile(SEXP xx) {
   return List;
 }
 
-SEXP CStandardHomePh(SEXP xx) {
+SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
+  const int area_cd = isInteger(AreaCd) ? asInteger(AreaCd) : 0;
   R_xlen_t N = xlength(xx);
   if (!isString(xx)) {
     return xx;
@@ -206,17 +229,21 @@ SEXP CStandardHomePh(SEXP xx) {
       continue; // 0Mobile Number Not Provided
     }
     const char * x = CHAR(xp[i]);
-    if (x[1] == '4' && x[0] == '4')  {
+    if (x[1] == '4' && x[0] == '0')  {
       // Likely mobile phone number
+      ansp[i] = extract_mobile(x, n);
       continue;
     }
     if (x[0] == '6' && x[1] == '1' && x[2] == '4') {
+      ansp[i] = extract_mobile(x, n);
       continue;
     }
     if (x[0] == '+' && x[1] == '6' && x[2] == '1' && x[3] == '4') {
+      ansp[i] = extract_mobile(x, n);
       continue;
     }
     if (x[0] == '6' && x[1] == '1' && x[2] == '4') {
+      ansp[i] = extract_mobile(x, n);
       continue;
     }
 
@@ -231,20 +258,33 @@ SEXP CStandardHomePh(SEXP xx) {
         ten *= 10;
       }
       ansp[i] = o;
+      continue;
     }
+    // (03)12345678
     if (x[0] == '(' && x[3] == ')') {
       for (int j = n - 1; j >= 4; --j) {
         if (ten > 1e8) {
           break;
         }
+        if (isdigit(x[j])) {
+          o += ten * char2number(x[j]);
+          ten *= 10;
+        }
+      }
+      ansp[i] = o;
+      continue;
+    }
+    if (n <= 9) {
+      for (int j = n - 1; j >= 0; --j) {
         o += ten * char2number(x[j]);
         ten *= 10;
       }
       ansp[i] = o;
+      continue;
     }
 
 
-    for (int j = n; j >= 2; --j) {
+    for (int j = n - 1; j >= 0; --j) {
       if (ten > 1e8) {
         break;
       }
