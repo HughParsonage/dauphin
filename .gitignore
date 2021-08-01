@@ -6,6 +6,8 @@
 !*.c
 !*.R
 !*.yml
+!man/
+!man/*.Rd
 !*/R/*.R
 !*/src/*.c
 !*/src/*.h
