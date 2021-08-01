@@ -5,6 +5,10 @@
 *.*
 !*.c
 !*.R
+!*.yml
 !*/R/*.R
 !*/src/*.c
 !*/src/*.h
+!.github/
+!.github/workflows/
+!.github/workflows/main.yml

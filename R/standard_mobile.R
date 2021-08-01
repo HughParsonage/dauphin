@@ -6,6 +6,9 @@
 #' @param ignore_calling_code \code{logical(1)} Whether to ignore the calling code
 #' \code{+61} in the result.
 #'
+#' @param mob,landline Character vectors in which mobile numbers and landline
+#' numbers are expected.
+#'
 #' @return
 #' Mobile phone numbers are represented as integer vectors. International
 #' calling prefixes extend the number beyond the representation of signed
@@ -26,6 +29,10 @@
 #' dauphin_mobile("0400 123 456")
 #' dauphin_mobile("+61400123456", ignore_calling_code = TRUE)
 #'
+#' dauphin_mobile_landline("0424 123 456", "03 1234 5678")
+#' dauphin_mobile_landline(c("0424 123 456", "03 1234 5678"),
+#'                         c(NA, "0424 123 456"))
+#'
 #' @export
 
 dauphin_mobile <- function(x, ignore_calling_code = NA) {
@@ -41,9 +48,11 @@ dauphin_mobile_cc <- function(x) {
   .Call("CStandardMobile", x, PACKAGE = packageName())
 }
 
+#' @rdname dauphin_mobile
+#' @export
 dauphin_mobile_landline <- function(mob, landline) {
   dmob <- .Call("CStandardMobile", mob, PACKAGE = packageName())
-  dhom <- .Call("CStandardHomePh", landline, PACKAGE = packageName())
+  dhom <- .Call("CStandardHomePh", landline, 3L, PACKAGE = packageName())
   .Call("C_iMobileiHome", dmob[[1]], dhom, PACKAGE = packageName())
 }
 
