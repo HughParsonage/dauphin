@@ -28,7 +28,7 @@ SEXP Cgsub_09(SEXP xx) {
         o += ten * oj;
         ten *= 10;
       } else {
-        if (!ispunct(xj)) {
+        if (xj != ' ' && xj != '-' && xj != ',') {
           // we continue the number if it's a comma or dash or space etc
           o = 0;
           ten = 1;
@@ -57,15 +57,35 @@ bool jchars_are_numbers(int jj0, int jj1, int jj2, const char * x, int n, int j)
 int is_04mobile_from(const char * x, int n, char char1) {
 
   if (n == 10) {
-    if (x[0] == '0' && x[1] == '4' &&
+    if (x[0] == '0' &&
+        x[1] == '4' &&
+        jchar_is_number(x, 2) &&
         jchar_is_number(x, 3) &&
+
         jchar_is_number(x, 4) &&
         jchar_is_number(x, 5) &&
         jchar_is_number(x, 6) &&
+
         jchar_is_number(x, 7) &&
         jchar_is_number(x, 8) &&
         jchar_is_number(x, 9)) {
       return 9;
+    }
+    return 0;
+  }
+  if (n == 9) {
+    if (x[0] == '4' &&
+        jchar_is_number(x, 1) &&
+        jchar_is_number(x, 2) &&
+
+        jchar_is_number(x, 3) &&
+        jchar_is_number(x, 4) &&
+        jchar_is_number(x, 5) &&
+
+        jchar_is_number(x, 6) &&
+        jchar_is_number(x, 7) &&
+        jchar_is_number(x, 8)) {
+      return 8;
     }
     return 0;
   }

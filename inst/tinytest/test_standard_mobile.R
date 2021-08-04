@@ -2,6 +2,8 @@ library(dauphin)
 dauphin_mobile1 <- function(x) dauphin_mobile(x, ignore_calling_code = TRUE)
 
 expect_equal(dauphin_mobile1("0401 234 234"), 401234234)
+expect_equal(dauphin_mobile1("0401234234"), 401234234)
+expect_equal(dauphin_mobile1("401234234"), 401234234)
 expect_equal(dauphin_mobile1("61401 234 234"), 401234234)
 expect_equal(dauphin_mobile1("+61401 234 234"), 401234234)
 expect_equal(dauphin_mobile1("+61401234234"), 401234234)
