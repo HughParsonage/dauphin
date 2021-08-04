@@ -14,7 +14,7 @@ SEXP Cgsub_09(SEXP xx) {
     SEXP CX = STRING_ELT(xx, i);
     if (CX == NA_STRING) {
       // SET_STRING_ELT(ans, i, CX);
-      ansp[i] = NA_REAL;
+      ansp[i] = NA_INTEGER;
       continue;
     }
     int n = length(CX);
