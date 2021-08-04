@@ -8,6 +8,7 @@
 */
 
 /* .Call calls */
+extern SEXP C_all_digits(SEXP);
 extern SEXP C_CCRequired(SEXP, SEXP);
 extern SEXP C_iMobileiHome(SEXP, SEXP);
 extern SEXP Cgrepl_digit(SEXP);
@@ -16,6 +17,7 @@ extern SEXP CStandardHomePh(SEXP, SEXP);
 extern SEXP CStandardMobile(SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
+    {"C_all_digits",    (DL_FUNC) &C_all_digits,    1},
     {"C_CCRequired",    (DL_FUNC) &C_CCRequired,    2},
     {"C_iMobileiHome",  (DL_FUNC) &C_iMobileiHome,  2},
     {"Cgrepl_digit",    (DL_FUNC) &Cgrepl_digit,    1},
