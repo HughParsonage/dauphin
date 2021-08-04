@@ -1,0 +1,7 @@
+
+s <- c("AB", "abc ", "", NA, "90", "ABC090")
+expect_equal(dauphin:::grepl_digit(s), grepl("[0-9]", s))
+expect_equal(dauphin:::gsub_09("1 234"), 1234)
+
+
+
