@@ -2,16 +2,6 @@
 
 static int tens[10] = {1, 10, 100, 1000, 10000, 100000, 1000000, 10000000, 100000000, 1000000000};
 
-int char12_to_int(const char * x) {
-  int o = 0;
-  int ten = 1;
-  for (int i = 11; i >= 4; --i) {
-    o += ten * (x[i] - '0');
-    ten *= 10;
-  }
-  return o;
-}
-
 int char2int(const char * x, int s) {
   int o = 0;
   int ten = 1;

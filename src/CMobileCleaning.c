@@ -162,8 +162,11 @@ int extract_mobile(const char * x, int n) {
         if (mob_no > 499999999) {
           break;
         }
-        mob_no += ten * char2number(x[j]);
-        ten *= x[j] != ' ' ? 10 : 1;
+        char xj = x[j];
+        if (isdigit(xj)) {
+          mob_no += (xj - '0');
+          ten *= 10;
+        }
       }
       return mob_no;
     }
