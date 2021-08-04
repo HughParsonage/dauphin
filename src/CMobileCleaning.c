@@ -210,12 +210,20 @@ SEXP CStandardMobile(SEXP xx) {
       unsigned int mob_no = 400000000;
       unsigned int ten = 1;
       int left_j = prefix == '0' ? 2 : (prefix == '6' ? 3 : 4);
+      int digits_found = 0;
       for (int j = j_04mob; j >= left_j; --j) {
         if (mob_no > 499999999) {
           break;
         }
-        mob_no += ten * char2number(x[j]);
-        ten *= x[j] != ' ' ? 10 : 1;
+        char xj = x[j];
+        if (isdigit(xj)) {
+          ++digits_found;
+          mob_no += ten * (xj - '0');
+          ten *= 10;
+        }
+        if (digits_found > 8) {
+          break;
+        }
       }
       ansp[i] = mob_no;
       intp[i] = 61;
