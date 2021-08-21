@@ -89,6 +89,25 @@ int is_04mobile_from(const char * x, int n, char char1) {
     }
     return 0;
   }
+  if (n == 15) {
+    if (x[0] == '+' && x[1] == '6' && x[2] == '1' &&
+        x[3] == ' ' && x[4] == '4' &&
+        jchar_is_number(x, 5) &&
+        jchar_is_number(x, 6) &&
+
+        jchar_is_number(x, 8) &&
+        jchar_is_number(x, 9) &&
+        jchar_is_number(x, 10) &&
+
+        jchar_is_number(x, 12) &&
+        jchar_is_number(x, 13) &&
+        jchar_is_number(x, 14)) {
+      return 14;
+    }
+    return 0;
+  }
+
+
   int j = 0;
   // start from the digit just before the first '4' in the number
   // +614 we advance until we hit a plus
@@ -97,6 +116,9 @@ int is_04mobile_from(const char * x, int n, char char1) {
     ++j;
   }
   while (char1 != '0' && j < n && x[j] == '6') {
+    ++j;
+  }
+  while (x[j] == ' ') {
     ++j;
   }
   for (; j < n - 9; ++j) {
@@ -210,6 +232,9 @@ SEXP CStandardMobile(SEXP xx) {
       unsigned int mob_no = 400000000;
       unsigned int ten = 1;
       int left_j = prefix == '0' ? 2 : (prefix == '6' ? 3 : 4);
+      if (n == 15) {
+        left_j = 5;
+      }
       int digits_found = 0;
       for (int j = j_04mob; j >= left_j; --j) {
         if (mob_no > 499999999) {
@@ -244,7 +269,7 @@ SEXP CStandardMobile(SEXP xx) {
 }
 
 SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
-  const int area_cd = isInteger(AreaCd) ? asInteger(AreaCd) : 0;
+  const int area_cd = asInteger(AreaCd);
   R_xlen_t N = xlength(xx);
   if (!isString(xx)) {
     return xx;
@@ -277,6 +302,12 @@ SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
       ansp[i] = extract_mobile(x, n);
       continue;
     }
+    if (n == 8) {
+      ansp[i] = area_cd + atoi(x);
+      continue;
+    }
+
+
 
 
 
@@ -292,7 +323,7 @@ SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
       continue;
     }
     // (03)12345678
-    if (x[0] == '(' && x[3] == ')') {
+    if (n == 12 && x[0] == '(' && x[3] == ')') {
       for (int j = n - 1; j >= 4; --j) {
         if (ten > 1e8) {
           break;
@@ -301,6 +332,10 @@ SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
           o += ten * char2number(x[j]);
           ten *= 10;
         }
+      }
+
+      if (isdigit(x[2])) {
+        o += 1e8 * (x[2] - '0');
       }
       ansp[i] = o;
       continue;

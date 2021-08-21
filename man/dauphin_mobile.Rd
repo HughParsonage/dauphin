@@ -7,7 +7,7 @@
 \usage{
 dauphin_mobile(x, ignore_calling_code = NA)
 
-dauphin_mobile_landline(mob, landline)
+dauphin_mobile_landline(mob, landline, default_landline = 0L)
 }
 \arguments{
 \item{x}{A vector, generally a character vector, in which mobile numbers
