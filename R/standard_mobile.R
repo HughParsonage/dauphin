@@ -39,11 +39,12 @@
 #' @export
 
 dauphin_mobile <- function(x, ignore_calling_code = NA) {
+  # calling code required?
   cc_required <- .Call("C_CCRequired", x, ignore_calling_code, PACKAGE = packageName())
   ans <- .Call("CStandardMobile", x, PACKAGE = packageName())
-  if (cc_required) {
-    return(.subset2(ans, 1L))
-  }
+  # if (!cc_required) {
+  #   return(.subset2(ans, 1L))
+  # }
   ans
 }
 
@@ -64,4 +65,15 @@ dauphin_mobile_landline <- function(mob, landline, default_landline = 0L) {
   dhom <- .Call("CStandardHomePh", landline, default_landline * 1e8L, PACKAGE = packageName())
   .Call("C_iMobileiHome", dmob[[1]], dhom, PACKAGE = packageName())
 }
+
+#' @rdname dauphin_mobile
+#' @export
+print.dauphin_mobile <- function(x, ...) {
+  # Mobile and calling code
+  MOB <- .subset2(x, 1L)
+  CCD <- .subset2(x, 2L)
+  N <- length(MOB)
+  invisible(.Call("PrintMobile", MOB, CCD, PACKAGE = packageName()))
+}
+
 

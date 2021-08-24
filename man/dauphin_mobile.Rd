@@ -3,11 +3,14 @@
 \name{dauphin_mobile}
 \alias{dauphin_mobile}
 \alias{dauphin_mobile_landline}
+\alias{print.dauphin_mobile}
 \title{Standardize Australian mobilie phone numbers}
 \usage{
 dauphin_mobile(x, ignore_calling_code = NA)
 
 dauphin_mobile_landline(mob, landline, default_landline = 0L)
+
+\method{print}{dauphin_mobile}(x, ...)
 }
 \arguments{
 \item{x}{A vector, generally a character vector, in which mobile numbers

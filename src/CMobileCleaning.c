@@ -217,6 +217,13 @@ SEXP CStandardMobile(SEXP xx) {
     }
 
     const char * x = CHAR(CX);
+    if (n == 9 && x[0] == '4') {
+      // Number like "444123456"
+      ansp[i] = all_digits(x, 9) ? atoi(x) : NA_INTEGER;
+      intp[i] = 61;
+      continue;
+    }
+
     char prefix = '0';
     int j_04mob = is_04mobile_from(x, n, '0');
     if (j_04mob == 0) {
@@ -398,4 +405,56 @@ SEXP C_iMobileiHome(SEXP x, SEXP y) {
   UNPROTECT(1);
   return List;
 }
+
+SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
+  R_xlen_t N = xlength(Mob);
+  if (!isInteger(Mob) || (TYPEOF(Ccd) != RAWSXP)) {
+    warning("Internal error: Mob and Ccd not INTSXP and RAWSXP of equal length.");
+    return R_NilValue;
+  }
+  const bool use_ccd = xlength(Ccd) == N;
+  const unsigned char * ccd = RAW(Ccd);
+  const int * mob = INTEGER(Mob);
+  const R_xlen_t topn = 4;
+
+  bool above_top = true;
+  int n_digits_last = log10(N);
+
+  for (R_xlen_t i = 0; i < N; ++i) {
+    if (i > topn && i < (N - topn)) {
+      if (above_top) {
+        for (int lz = 0; lz < (n_digits_last - 1); ++lz) {
+          Rprintf(" ");
+        }
+        Rprintf("---\n");
+        above_top = false;
+      }
+      continue;
+    }
+    unsigned char cci = use_ccd ? ccd[i] : 61;
+    unsigned int ucci = cci;
+    int mobi = mob[i];
+    if (mobi <= 0) {
+      if (i <= topn) {
+        for (int lz = 0; lz < n_digits_last; ++lz) {
+          Rprintf(" ");
+        }
+      }
+      Rprintf("%lld: NA\n");
+      continue;
+    }
+
+    int m3 = mobi % 1000;
+    int m2 = (mobi / 1000) % 1000;
+    int m1 = (mobi / 1000000) % 1000;
+    if (i <= topn) {
+      for (int lz = 0; lz < n_digits_last; ++lz) {
+        Rprintf(" ");
+      }
+    }
+    Rprintf("%lld: +%d %03d %03d %03d\n", i + 1, ucci, m1, m2, m3);
+  }
+  return R_NilValue;
+}
+
 

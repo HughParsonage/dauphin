@@ -15,6 +15,7 @@ extern SEXP Cgrepl_digit(SEXP);
 extern SEXP Cgsub_09(SEXP);
 extern SEXP CStandardHomePh(SEXP, SEXP);
 extern SEXP CStandardMobile(SEXP);
+extern SEXP PrintMobile(SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"C_all_digits",    (DL_FUNC) &C_all_digits,    1},
@@ -24,6 +25,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"Cgsub_09",        (DL_FUNC) &Cgsub_09,        1},
     {"CStandardHomePh", (DL_FUNC) &CStandardHomePh, 2},
     {"CStandardMobile", (DL_FUNC) &CStandardMobile, 1},
+    {"PrintMobile",     (DL_FUNC) &PrintMobile,     2},
     {NULL, NULL, 0}
 };
 
