@@ -18,6 +18,9 @@ are expected.}
 
 \item{mob, landline}{Character vectors in which mobile numbers and landline
 numbers are expected.}
+
+\item{default_landline}{An integer between 1 and 10 giving, for
+landline numbers with 8 digits, what area code should be set.}
 }
 \value{
 Mobile phone numbers are represented as integer vectors. International

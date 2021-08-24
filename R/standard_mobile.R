@@ -9,6 +9,9 @@
 #' @param mob,landline Character vectors in which mobile numbers and landline
 #' numbers are expected.
 #'
+#' @param default_landline An integer between 1 and 10 giving, for
+#' landline numbers with 8 digits, what area code should be set.
+#'
 #' @return
 #' Mobile phone numbers are represented as integer vectors. International
 #' calling prefixes extend the number beyond the representation of signed
