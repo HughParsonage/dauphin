@@ -10,7 +10,12 @@
 #' numbers are expected.
 #'
 #' @param default_landline An integer between 1 and 10 giving, for
-#' landline numbers with 8 digits, what area code should be set.
+#' landline numbers with 8 digits, what area code should be set. By default,
+#' it is \code{1L}, but users should set the option
+#' \code{"dauphin.default_landline"} so to correctly standardize non-mobile
+#' numbers.
+#'
+#' @param ... Arguments passed to other methods.
 #'
 #' @return
 #' Mobile phone numbers are represented as integer vectors. International
@@ -55,7 +60,7 @@ dauphin_mobile_cc <- function(x) {
 
 #' @rdname dauphin_mobile
 #' @export
-dauphin_mobile_landline <- function(mob, landline, default_landline = 0L) {
+dauphin_mobile_landline <- function(mob, landline, default_landline = getOption("dauphin.default_landline", 1L)) {
   stopifnot(is.integer(default_landline),
             length(default_landline) == 1,
             !is.na(default_landline),
