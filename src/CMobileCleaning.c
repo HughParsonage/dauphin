@@ -208,7 +208,14 @@ int extract_au_mobile(const char * x, int n) {
     for (int j = j1; j < n; ++j) {
       char xj = x[j];
       if (!isdigit(xj)) {
-        continue;
+        // spaces are ok between digits
+        if (xj == ' ') {
+          continue;
+        }
+        // if it's not a digit or space, possibly extraneous text
+        // hopefully the mobile is formed but we shouldn't add digits
+        // trailing this text
+        break;
       }
       // Same as o *= 10 but for unsigned int to avoid overflow
       o = (o << 1) + (o << 3);
