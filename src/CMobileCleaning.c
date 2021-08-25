@@ -1,7 +1,6 @@
 #include "dauphin.h"
 
-bool intIsMobRange(int x) {
-  unsigned int ux = x;
+bool intIsMobRange(unsigned int ux) {
   ux -= 400000000;
   return ux < 100000000;
 }
@@ -175,16 +174,17 @@ int is_au_landline(const char * x, int n) {
   return 0;
 }
 
-int extract_mobile(const char * x, int n) {
+
+int extract_au_mobile(const char * x, int n) {
   if (n < 9) {
     return NA_INTEGER;
   }
-  if (n == 9) {
-    int out = atoi(x);
-    return intIsMobRange(out) ? out : NA_INTEGER;
+  unsigned int o = 0;
+  if (n <= 10) {
+    o = atoi(x);
+    return intIsMobRange(o) ? o : NA_INTEGER;
   }
 
-  int o = 0;
   int j1 = 0;
   if (x[j1] == '+') {
     ++j1;
@@ -198,21 +198,23 @@ int extract_mobile(const char * x, int n) {
   if (x[j1] == ' ') {
     ++j1;
   }
-  if (x[j1] == '4') {
+  if (x[j1] == '0') {
     ++j1;
   }
-  if (j1) {
+
+  if (x[j1] == '4') {
+    o = 4;
+    ++j1;
     for (int j = j1; j < n; ++j) {
-      if (o >= 1e8) {
-        break;
-      }
-      if (!isdigit(x[j])) {
+      char xj = x[j];
+      if (!isdigit(xj)) {
         continue;
       }
-      o *= 10;
-      o += x[j] - '0';
+      // Same as o *= 10 but for unsigned int to avoid overflow
+      o = (o << 1) + (o << 3);
+      o += xj - '0';
     }
-    return o;
+    return intIsMobRange(o) ? o : NA_INTEGER;
   }
   return NA_INTEGER;
 }
@@ -231,59 +233,68 @@ SEXP CStandardMobile(SEXP xx) {
   for (R_xlen_t i = 0; i < N; ++i) {
     SEXP CX = xp[i];
     int n = length(CX);
+    intp[i] = 0;
+    ansp[i] = NA_INTEGER;
     if (n < 9) {
-      intp[i] = 0;
-      ansp[i] = NA_INTEGER;
       continue;
     }
 
     const char * x = CHAR(CX);
-    if (n == 9 && x[0] == '4') {
-      // Number like "444123456"
-      ansp[i] = all_digits(x, 9) ? atoi(x) : NA_INTEGER;
+    int au_mob = extract_au_mobile(x, n);
+    if (au_mob > 0) {
+      ansp[i] = au_mob;
       intp[i] = 61;
       continue;
     }
 
-    char prefix = '0';
-    int j_04mob = is_04mobile_from(x, n, '0');
-    if (j_04mob == 0) {
-      prefix = '+';
-      j_04mob = is_04mobile_from(x, n, '+');
-    }
-    if (j_04mob == 0) {
-      prefix = '6';
-      j_04mob = is_04mobile_from(x, n, '6');
-    }
-    if (j_04mob) {
-      // Australian number 04
-      unsigned int mob_no = 400000000;
-      unsigned int ten = 1;
-      int left_j = prefix == '0' ? 2 : (prefix == '6' ? 3 : 4);
-      if (n == 15) {
-        left_j = 5;
-      }
-      int digits_found = 0;
-      for (int j = j_04mob; j >= left_j; --j) {
-        if (mob_no > 499999999) {
-          break;
-        }
-        char xj = x[j];
-        if (isdigit(xj)) {
-          ++digits_found;
-          mob_no += ten * (xj - '0');
-          ten *= 10;
-        }
-        if (digits_found > 8) {
-          break;
-        }
-      }
-      ansp[i] = mob_no;
-      intp[i] = 61;
-      continue;
-    }
-    ansp[i] = 0;
-    intp[i] = 1;
+
+
+    // if (n == 9 && x[0] == '4') {
+    //   // Number like "444123456"
+    //   ansp[i] = all_digits(x, 9) ? atoi(x) : NA_INTEGER;
+    //   intp[i] = 61;
+    //   continue;
+    // }
+    //
+    // char prefix = '0';
+    // int j_04mob = is_04mobile_from(x, n, '0');
+    // if (j_04mob == 0) {
+    //   prefix = '+';
+    //   j_04mob = is_04mobile_from(x, n, '+');
+    // }
+    // if (j_04mob == 0) {
+    //   prefix = '6';
+    //   j_04mob = is_04mobile_from(x, n, '6');
+    // }
+    // if (j_04mob) {
+    //   // Australian number 04
+    //   unsigned int mob_no = 400000000;
+    //   unsigned int ten = 1;
+    //   int left_j = prefix == '0' ? 2 : (prefix == '6' ? 3 : 4);
+    //   if (n == 15) {
+    //     left_j = 5;
+    //   }
+    //   int digits_found = 0;
+    //   for (int j = j_04mob; j >= left_j; --j) {
+    //     if (mob_no > 499999999) {
+    //       break;
+    //     }
+    //     char xj = x[j];
+    //     if (isdigit(xj)) {
+    //       ++digits_found;
+    //       mob_no += ten * (xj - '0');
+    //       ten *= 10;
+    //     }
+    //     if (digits_found > 8) {
+    //       break;
+    //     }
+    //   }
+    //   ansp[i] = mob_no;
+    //   intp[i] = 61;
+    //   continue;
+    // }
+    // ansp[i] = 0;
+    // intp[i] = 1;
 
 
 
@@ -313,38 +324,12 @@ SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
       continue; // 0Mobile Number Not Provided
     }
     const char * x = CHAR(xp[i]);
-    if (n == 9 && x[0] == '4') {
-      if (i == 0)
-        Rprintf("===>");
-      ansp[i] = extract_mobile(x, 9);
+    int au_mob = extract_au_mobile(x, n);
+    // If it's simply a mobile
+    if (au_mob > 0) {
+      ansp[i] = au_mob;
       continue;
     }
-    if (x[1] == '4' && x[0] == '0')  {
-      // Likely mobile phone number
-      ansp[i] = extract_mobile(x, n);
-      continue;
-    }
-    if (x[0] == '6' && x[1] == '1' && x[2] == '4') {
-      ansp[i] = extract_mobile(x, n);
-      continue;
-    }
-    if (x[0] == '+' && x[1] == '6' && x[2] == '1' && x[3] == '4') {
-      ansp[i] = extract_mobile(x, n);
-      continue;
-    }
-    if (x[0] == '6' && x[1] == '1' && x[2] == '4') {
-      ansp[i] = extract_mobile(x, n);
-      continue;
-    }
-    if (n == 8) {
-      ansp[i] = area_cd + atoi(x);
-      continue;
-    }
-
-
-
-
-
 
     int o = 0;
     int ten = 1;
