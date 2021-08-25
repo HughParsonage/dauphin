@@ -1,6 +1,10 @@
 #include "dauphin.h"
 
-
+bool intIsMobRange(int x) {
+  unsigned int ux = x;
+  ux -= 400000000;
+  return ux < 100000000;
+}
 
 
 SEXP Cgsub_09(SEXP xx) {
@@ -172,26 +176,43 @@ int is_au_landline(const char * x, int n) {
 }
 
 int extract_mobile(const char * x, int n) {
-  const char prefixes[3] = {'0', '+', '6'};
-  for (int p = 0; p < 3; ++p) {
-    char prefix = prefixes[p];
-    int j_04mob = is_04mobile_from(x, n, prefix);
-    if (j_04mob) {
-      unsigned int mob_no = 400000000;
-      unsigned int ten = 1;
-      int left_j = prefix == '0' ? 2 : (prefix == '6' ? 3 : 4);
-      for (int j = j_04mob; j >= left_j; --j) {
-        if (mob_no > 499999999) {
-          break;
-        }
-        char xj = x[j];
-        if (isdigit(xj)) {
-          mob_no += (xj - '0');
-          ten *= 10;
-        }
+  if (n < 9) {
+    return NA_INTEGER;
+  }
+  if (n == 9) {
+    int out = atoi(x);
+    return intIsMobRange(out) ? out : NA_INTEGER;
+  }
+
+  int o = 0;
+  int j1 = 0;
+  if (x[j1] == '+') {
+    ++j1;
+  }
+  if (x[j1] == '6') {
+    ++j1;
+  }
+  if (x[j1] == '1') {
+    ++j1;
+  }
+  if (x[j1] == ' ') {
+    ++j1;
+  }
+  if (x[j1] == '4') {
+    ++j1;
+  }
+  if (j1) {
+    for (int j = j1; j < n; ++j) {
+      if (o >= 1e8) {
+        break;
       }
-      return mob_no;
+      if (!isdigit(x[j])) {
+        continue;
+      }
+      o *= 10;
+      o += x[j] - '0';
     }
+    return o;
   }
   return NA_INTEGER;
 }
@@ -292,6 +313,12 @@ SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
       continue; // 0Mobile Number Not Provided
     }
     const char * x = CHAR(xp[i]);
+    if (n == 9 && x[0] == '4') {
+      if (i == 0)
+        Rprintf("===>");
+      ansp[i] = extract_mobile(x, 9);
+      continue;
+    }
     if (x[1] == '4' && x[0] == '0')  {
       // Likely mobile phone number
       ansp[i] = extract_mobile(x, n);

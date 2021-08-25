@@ -6,24 +6,24 @@
 \alias{print.dauphin_mobile}
 \title{Standardize Australian mobilie phone numbers}
 \usage{
-dauphin_mobile(x, ignore_calling_code = NA)
+dauphin_mobile(mob, ignore_calling_code = NA)
 
 dauphin_mobile_landline(mob, landline, default_landline = 0L)
 
 \method{print}{dauphin_mobile}(x, ...)
 }
 \arguments{
-\item{x}{A vector, generally a character vector, in which mobile numbers
-are expected.}
+\item{mob, landline}{Character vectors in which mobile numbers and landline
+numbers are expected.}
 
 \item{ignore_calling_code}{\code{logical(1)} Whether to ignore the calling code
 \code{+61} in the result.}
 
-\item{mob, landline}{Character vectors in which mobile numbers and landline
-numbers are expected.}
-
 \item{default_landline}{An integer between 1 and 10 giving, for
 landline numbers with 8 digits, what area code should be set.}
+
+\item{x}{A vector, generally a character vector, in which mobile numbers
+are expected.}
 }
 \value{
 Mobile phone numbers are represented as integer vectors. International
