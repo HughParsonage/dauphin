@@ -61,10 +61,7 @@ dauphin_mobile_landline <- function(mob, landline, default_landline = 0L) {
             !is.na(default_landline),
             default_landline >= 0L,
             default_landline <= 9L)
-  dmob <- .Call("CStandardMobile", mob, PACKAGE = packageName())
-
-  dhom <- .Call("CStandardHomePh", landline, default_landline * 1e8L, PACKAGE = packageName())
-  .Call("C_iMobileiHome", dmob[[1]], dhom, PACKAGE = packageName())
+  ans <- .Call("C_Mobile_Home", mob, landline, default_landline * 1e8L, PACKAGE = packageName())
 }
 
 #' @rdname dauphin_mobile

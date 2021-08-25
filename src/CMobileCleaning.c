@@ -5,6 +5,18 @@ bool intIsMobRange(unsigned int ux) {
   return ux < 100000000;
 }
 
+bool intIsAusRange(unsigned int ux, bool mob_ok) {
+  // true && purely for alignment
+  return
+  true &&
+    ux >= 100000000 &&
+    ux < 1000000000 &&
+    (mob_ok ||
+    ux <  400000000 ||
+    ux >= 500000000);
+}
+
+
 
 SEXP Cgsub_09(SEXP xx) {
   if (!isString(xx)) {
@@ -186,7 +198,16 @@ int extract_au_mobile(const char * x, int n) {
   }
 
   int j1 = 0;
+  while (j1 < n && !isdigit(x[j1]) && x[j1] != '+') {
+    ++j1;
+  }
+  if (j1 + 9 >= n) {
+    return NA_INTEGER;
+  }
   if (x[j1] == '+') {
+    if (x[j1 + 1] != '6') {
+      return NA_INTEGER;
+    }
     ++j1;
   }
   if (x[j1] == '6') {
@@ -253,59 +274,6 @@ SEXP CStandardMobile(SEXP xx) {
       intp[i] = 61;
       continue;
     }
-
-
-
-    // if (n == 9 && x[0] == '4') {
-    //   // Number like "444123456"
-    //   ansp[i] = all_digits(x, 9) ? atoi(x) : NA_INTEGER;
-    //   intp[i] = 61;
-    //   continue;
-    // }
-    //
-    // char prefix = '0';
-    // int j_04mob = is_04mobile_from(x, n, '0');
-    // if (j_04mob == 0) {
-    //   prefix = '+';
-    //   j_04mob = is_04mobile_from(x, n, '+');
-    // }
-    // if (j_04mob == 0) {
-    //   prefix = '6';
-    //   j_04mob = is_04mobile_from(x, n, '6');
-    // }
-    // if (j_04mob) {
-    //   // Australian number 04
-    //   unsigned int mob_no = 400000000;
-    //   unsigned int ten = 1;
-    //   int left_j = prefix == '0' ? 2 : (prefix == '6' ? 3 : 4);
-    //   if (n == 15) {
-    //     left_j = 5;
-    //   }
-    //   int digits_found = 0;
-    //   for (int j = j_04mob; j >= left_j; --j) {
-    //     if (mob_no > 499999999) {
-    //       break;
-    //     }
-    //     char xj = x[j];
-    //     if (isdigit(xj)) {
-    //       ++digits_found;
-    //       mob_no += ten * (xj - '0');
-    //       ten *= 10;
-    //     }
-    //     if (digits_found > 8) {
-    //       break;
-    //     }
-    //   }
-    //   ansp[i] = mob_no;
-    //   intp[i] = 61;
-    //   continue;
-    // }
-    // ansp[i] = 0;
-    // intp[i] = 1;
-
-
-
-
   }
   SEXP List = PROTECT(allocVector(VECSXP, 2));
   SET_VECTOR_ELT(List, 0, ans);
@@ -314,8 +282,90 @@ SEXP CStandardMobile(SEXP xx) {
   return List;
 }
 
+int extract_landline(const char * x, int n, unsigned int area_cd) {
+  if (n < 8) {
+    return NA_INTEGER;
+  }
+  unsigned int o = area_cd;
+  if (n == 8) {
+    o += atoi(x);
+    return intIsAusRange(o, true) ? o : NA_INTEGER;
+  }
+  int ten = 1;
+  if (n == 10) {
+    for (int j = 9; j >= 2; --j) {
+      o += ten * char2number(x[j]);
+      ten *= 10;
+    }
+    return o;
+  }
+
+  // if (n == 12 && x[0] == '(' && x[3] == ')') {
+  //   for (int j = n - 1; j >= 4; --j) {
+  //     if (ten > 1e8) {
+  //       break;
+  //     }
+  //     if (isdigit(x[j])) {
+  //       o += ten * char2number(x[j]);
+  //       ten *= 10;
+  //     }
+  //   }
+  //
+  //   if (isdigit(x[2])) {
+  //     o += 1e8 * (x[2] - '0');
+  //   }
+  //   return o;
+  // }
+  if (x[0] == '(' && x[3] == ')') {
+
+    o = isdigit(x[2]) ? x[2] - '0' : (area_cd / 1e8);
+
+    for (int j = 4; j < n; ++j) {
+      char xj = x[j];
+      if (!isdigit(xj)) {
+        // spaces are ok between digits
+        if (xj == ' ') {
+          continue;
+        }
+        // if it's not a digit or space, possibly extraneous text
+        // hopefully the mobile is formed but we shouldn't add digits
+        // trailing this text
+        break;
+      }
+      // Same as o *= 10 but for unsigned int to avoid overflow
+      o = (o << 1) + (o << 3);
+      o += xj - '0';
+    }
+    return intIsAusRange(o, false) ? o : NA_INTEGER;
+  }
+
+  for (int j = n - 1; j >= 0; --j) {
+    char xj = x[j];
+    if (o > 1e8) {
+      if (isdigit(xj)) {
+        o += ten * (x[j] - '0');
+        break;
+      }
+      o += area_cd;
+      break;
+    }
+
+    if (isdigit(xj)) {
+      o += ten * (x[j] - '0');
+      ten *= 10;
+    }
+  }
+  return intIsAusRange(o, false) ? o : NA_INTEGER;
+
+}
+
+
+
 SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
-  const int area_cd = asInteger(AreaCd);
+  const unsigned int area_cd = asInteger(AreaCd);
+  if (!intIsAusRange(area_cd, false)) {
+    error("`area_cd = %u` which is not a permitted area code.", area_cd); // # nocov
+  }
   R_xlen_t N = xlength(xx);
   if (!isString(xx)) {
     return xx;
@@ -337,59 +387,55 @@ SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
       ansp[i] = au_mob;
       continue;
     }
-
-    int o = 0;
-    int ten = 1;
-    if (n == 10) {
-      for (int j = 9; j >= 2; --j) {
-        o += ten * char2number(x[j]);
-        ten *= 10;
-      }
-      ansp[i] = o;
-      continue;
-    }
-    // (03)12345678
-    if (n == 12 && x[0] == '(' && x[3] == ')') {
-      for (int j = n - 1; j >= 4; --j) {
-        if (ten > 1e8) {
-          break;
-        }
-        if (isdigit(x[j])) {
-          o += ten * char2number(x[j]);
-          ten *= 10;
-        }
-      }
-
-      if (isdigit(x[2])) {
-        o += 1e8 * (x[2] - '0');
-      }
-      ansp[i] = o;
-      continue;
-    }
-    if (n <= 9) {
-      for (int j = n - 1; j >= 0; --j) {
-        o += ten * char2number(x[j]);
-        ten *= 10;
-      }
-      ansp[i] = o;
-      continue;
-    }
-
-
-    for (int j = n - 1; j >= 0; --j) {
-      if (ten > 1e8) {
-        break;
-      }
-      char xj = x[j];
-      if (isdigit(xj)) {
-        o += ten * (x[j] - '0');
-        ten *= 10;
-      }
-    }
+    int o = extract_landline(x, n, area_cd);
     ansp[i] = o;
   }
   UNPROTECT(1);
   return ans;
+}
+
+SEXP C_Mobile_Home(SEXP xx, SEXP yy, SEXP AreaCd) {
+  const unsigned int area_cd = asInteger(AreaCd);
+  if (!intIsAusRange(area_cd, false)) {
+    error("`area_cd = %u` which is not a permitted area code.", area_cd); // # nocov
+  }
+  R_xlen_t N = xlength(xx);
+  if (N != xlength(yy)) {
+    error("Internal error(C_Mobile_Home): Lengths of x and y differ."); // # nocov
+  }
+  if (!isString(xx) || !isString(yy)) {
+    error("Internal error(C_Mobile_Home): Wrong types."); // # nocov
+  }
+  const SEXP * xp = STRING_PTR(xx);
+  const SEXP * yp = STRING_PTR(yy);
+
+  SEXP mob = PROTECT(allocVector(INTSXP, N));
+  SEXP hom = PROTECT(allocVector(INTSXP, N));
+
+  int * restrict mobp = INTEGER(mob);
+  int * restrict homp = INTEGER(hom);
+
+  for (R_xlen_t i = 0; i < N; ++i) {
+    int xn = length(xp[i]);
+    int yn = length(yp[i]);
+
+    const char * xpi = CHAR(xp[i]);
+    const char * ypi = CHAR(yp[i]);
+
+    int x_mob = extract_au_mobile(xpi, xn);
+    int x_hom = extract_landline(xpi, xn, area_cd);
+    int y_mob = extract_au_mobile(ypi, yn);
+    int y_hom = extract_landline(ypi, yn, area_cd);
+
+    mobp[i] = x_mob != NA_INTEGER ? x_mob : y_mob;
+    homp[i] = y_hom != NA_INTEGER ? y_hom : x_hom;
+  }
+  SEXP ans = PROTECT(allocVector(VECSXP, 2));
+  SET_VECTOR_ELT(ans, 0, mob);
+  SET_VECTOR_ELT(ans, 1, hom);
+  UNPROTECT(3);
+  return ans;
+
 }
 
 SEXP C_iMobileiHome(SEXP x, SEXP y) {
@@ -408,15 +454,11 @@ SEXP C_iMobileiHome(SEXP x, SEXP y) {
     int ypi = yp[i];
 
     // note that if ypi = na then the below is false
-    bool y_mob = ypi >= 400000000 && ypi <= 499999999;
-    if (y_mob && xpi == NA_INTEGER) {
+    bool toggle = intIsMobRange(ypi) && !intIsMobRange(xpi);
+    if (toggle) {
       xp[i] = ypi;
-      yp[i] = NA_INTEGER;
-      continue;
+      yp[i] = xpi;
     }
-
-
-
   }
   SEXP List = PROTECT(allocVector(VECSXP, 2));
   SET_VECTOR_ELT(List, 0, x);

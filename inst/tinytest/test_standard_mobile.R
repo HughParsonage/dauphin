@@ -20,6 +20,8 @@ expect_equal(dauphin_mobile1(c("+61401234234",
                NA)[1:3])
 expect_equal(dauphin_mobile1("61444 999 888"),
              dauphin_mobile1( "0444 999 888"))
+expect_equal(dauphin_mobile1("BOB: 61444 999 888"),
+             dauphin_mobile1( "0444 999 888"))
 
 
 
@@ -27,6 +29,9 @@ expect_equal(dauphin_mobile_landline("0400 000 000", "(03)9876 5432", 2L),
              list(400e6, 398765432))
 
 expect_equal(dauphin_mobile_landline("0400 000 000/0365432100", "(03)9876 5432", 2L),
+             list(400e6, 398765432))
+# Reverse
+  expect_equal(dauphin_mobile_landline("(03)9876 5432", "0400 000 000/XX", 2L),
              list(400e6, 398765432))
 
 
