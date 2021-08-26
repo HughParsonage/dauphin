@@ -9,10 +9,10 @@
 #' @param mob,landline Character vectors in which mobile numbers and landline
 #' numbers are expected.
 #'
-#' @param default_landline An integer between 1 and 10 giving, for
+#' @param default_area_code An integer between 1 and 10 giving, for
 #' landline numbers with 8 digits, what area code should be set. By default,
 #' it is \code{1L}, but users should set the option
-#' \code{"dauphin.default_landline"} so to correctly standardize non-mobile
+#' \code{"dauphin.default_area_code"} so to correctly standardize non-mobile
 #' numbers.
 #'
 #' @param ... Arguments passed to other methods.
@@ -56,7 +56,7 @@ dauphin_mobile <- function(mob, ignore_calling_code = NA) {
 
 #' @rdname dauphin_mobile
 #' @export
-dauphin_landline <- function(landline, default_area_code = getOption("daiphin.default_landline", 1L)) {
+dauphin_landline <- function(landline, default_area_code = getOption("daiphin.default_area_code", 1L)) {
   if (is.character(default_area_code <- check_area_cd(default_area_code))) {
     stop(default_area_code)
   }
@@ -70,7 +70,7 @@ dauphin_mobile_cc <- function(x) {
 
 #' @rdname dauphin_mobile
 #' @export
-dauphin_mobile_landline <- function(mob, landline, default_area_code = getOption("dauphin.default_landline", 1L)) {
+dauphin_mobile_landline <- function(mob, landline, default_area_code = getOption("dauphin.default_area_code", 1L)) {
   if (is.character(default_area_code <- check_area_cd(default_area_code))) {
     stop(default_area_code)
   }

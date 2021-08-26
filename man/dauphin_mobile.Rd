@@ -11,13 +11,13 @@ dauphin_mobile(mob, ignore_calling_code = NA)
 
 dauphin_landline(
   landline,
-  default_area_code = getOption("daiphin.default_landline", 1L)
+  default_area_code = getOption("daiphin.default_area_code", 1L)
 )
 
 dauphin_mobile_landline(
   mob,
   landline,
-  default_area_code = getOption("dauphin.default_landline", 1L)
+  default_area_code = getOption("dauphin.default_area_code", 1L)
 )
 
 \method{print}{dauphin_mobile}(x, ...)
@@ -29,16 +29,16 @@ numbers are expected.}
 \item{ignore_calling_code}{\code{logical(1)} Whether to ignore the calling code
 \code{+61} in the result.}
 
+\item{default_area_code}{An integer between 1 and 10 giving, for
+landline numbers with 8 digits, what area code should be set. By default,
+it is \code{1L}, but users should set the option
+\code{"dauphin.default_area_code"} so to correctly standardize non-mobile
+numbers.}
+
 \item{x}{A vector, generally a character vector, in which mobile numbers
 are expected.}
 
 \item{...}{Arguments passed to other methods.}
-
-\item{default_landline}{An integer between 1 and 10 giving, for
-landline numbers with 8 digits, what area code should be set. By default,
-it is \code{1L}, but users should set the option
-\code{"dauphin.default_landline"} so to correctly standardize non-mobile
-numbers.}
 }
 \value{
 Mobile phone numbers are represented as integer vectors. International
