@@ -1,6 +1,6 @@
-#' Standardize Australian mobilie phone numbers
+#' Standardize Australian phone numbers
 #'
-#' @param x A vector, generally a character vector, in which mobile numbers
+#' @param x A vector, generally a character vector, in which phone numbers
 #' are expected.
 #'
 #' @param ignore_calling_code \code{logical(1)} Whether to ignore the calling code
@@ -34,14 +34,22 @@
 #' appears to have international prefixes already.
 #'
 #' \describe{
-#' \item{\code{dauphin_mobile}}{}
-#' \item{\code{dauphin_landline}}{An integer vector the integer representation of the landline.}
+#' \item{\code{dauphin_mobile}}{An integer vector, the integer representation of
+#' the mobile phone. If the calling code is required or requested, a list
+#' of two vectors is returned, with the second element a raw vector with
+#' a representation of the corresponding number.}
+#' \item{\code{dauphin_landline}}{An integer vector, the integer representation of the landline.}
+#' \item{\code{dauphin_mobile_landline}}{A list of two vectors with the
+#' mobile and landline vectors respectively, even if the character
+#' vectors passed are in the wrong order (or partially in the wrong order).
+#'  Useful if some of the entries
+#' are in the wrong place.}
 #'
 #' }
 #'
 #' @examples
 #' dauphin_mobile("0400 123 456")
-#' dauphin_mobile("+61400123456", ignore_calling_code = TRUE)
+#' dauphin_mobile("+61400123456", ignore_calling_code = FALSE)
 #'
 #' dauphin_mobile_landline("0424 123 456", "03 1234 5678")
 #' dauphin_mobile_landline(c("0424 123 456", "03 1234 5678"),
