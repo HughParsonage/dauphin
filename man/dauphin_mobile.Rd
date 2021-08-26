@@ -41,7 +41,7 @@ are expected.}
 \item{...}{Arguments passed to other methods.}
 }
 \value{
-Mobile phone numbers are represented as integer vectors. International
+Mobile phone numbers or landline numbers are represented as integer vectors. International
 calling prefixes extend the number beyond the representation of signed
 integers. We use \code{raw} vectors for the international prefix, if required.
 
@@ -55,6 +55,12 @@ of the list is the calling prefix.
 
 If \code{ignore_calling_code = NA} then it is set to \code{TRUE} if \code{x}
 appears to have international prefixes already.
+
+\describe{
+\item{\code{dauphin_mobile}}{}
+\item{\code{dauphin_landline}}{An integer vector the integer representation of the landline.}
+
+}
 }
 \description{
 Standardize Australian mobilie phone numbers

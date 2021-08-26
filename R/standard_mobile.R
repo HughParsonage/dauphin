@@ -18,7 +18,7 @@
 #' @param ... Arguments passed to other methods.
 #'
 #' @return
-#' Mobile phone numbers are represented as integer vectors. International
+#' Mobile phone numbers or landline numbers are represented as integer vectors. International
 #' calling prefixes extend the number beyond the representation of signed
 #' integers. We use \code{raw} vectors for the international prefix, if required.
 #'
@@ -32,6 +32,12 @@
 #'
 #' If \code{ignore_calling_code = NA} then it is set to \code{TRUE} if \code{x}
 #' appears to have international prefixes already.
+#'
+#' \describe{
+#' \item{\code{dauphin_mobile}}{}
+#' \item{\code{dauphin_landline}}{An integer vector the integer representation of the landline.}
+#'
+#' }
 #'
 #' @examples
 #' dauphin_mobile("0400 123 456")
@@ -81,9 +87,16 @@ dauphin_mobile_landline <- function(mob, landline, default_area_code = getOption
 #' @export
 print.dauphin_mobile <- function(x, ...) {
   # Mobile and calling code
-  MOB <- .subset2(x, 1L)
+  if (is.atomic(x)) {
+    MOB <- x
+  } else {
+    MOB <- .subset2(x, 1L)
+  }
   N <- length(MOB)
-  CCD <- .subset2(x, 2L)
+  CCD <- raw()
+  if (!is.atomic(x) && length(x) >= 2L) {
+    CCD <- .subset2(x, 2L)
+  }
   if (!is.raw(CCD) || length(CCD) != N) {
     CCD <- raw(0)
   }
@@ -111,4 +124,11 @@ check_area_cd <- function(area_cd) {
   as.integer(area_cd) * 1e8L
 }
 
+EEncodeCC <- function(x) {
+  .Call("EncodeCC", x, PACKGE = packageName())
+}
+
+DecodeCC <- function(x) {
+  .Call("DecodeCC__", x, PACKGE = packageName())
+}
 

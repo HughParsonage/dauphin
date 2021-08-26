@@ -17,6 +17,67 @@ bool intIsAusRange(unsigned int ux, bool mob_ok) {
     ux >= 500000000);
 }
 
+unsigned int char2number(char x) {
+  return isdigit(x) ? (x - '0') : 0;
+}
+
+// List of Calling codes
+#define N_CALLING_CODES 228
+const unsigned int CC[256] = {61, 0, 1, 7, 20, 27, 30, 31, 32, 33, 34, 36, 39, 40, 41, 43,
+                              44, 45, 46, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 58, 60,    62,
+                              63, 64, 65, 66, 81, 82, 84, 86, 90, 91, 92, 93, 94, 95, 98, 211,
+                              212, 213, 216, 218, 220, 221, 222, 223, 224, 225, 226, 227, 228,
+                              229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241,
+                              242, 243, 244, 245, 246, 248, 249, 250, 251, 252, 253, 254, 255,
+                              256, 257, 258, 260, 261, 262, 263, 264, 265, 266, 267, 268, 269,
+                              290, 291, 297, 298, 299, 350, 351, 352, 353, 354, 355, 356, 357,
+                              358, 359, 370, 371, 372, 373, 374, 375, 376, 377, 378, 380, 381,
+                              382, 385, 386, 387, 389, 420, 421, 423, 500, 501, 502, 503, 504,
+                              505, 506, 507, 508, 509, 590, 591, 592, 593, 594, 595, 596, 597,
+                              598, 599, 670, 672, 673, 674, 675, 676, 677, 678, 679, 680, 681,
+                              682, 683, 685, 686, 687, 688, 689, 690, 691, 692, 850, 852, 853,
+                              855, 856, 870, 880, 886, 960, 961, 962, 963, 964, 965, 966, 967,
+                              968, 970, 971, 972, 973, 974, 975, 976, 977, 992, 993, 994, 995,
+                              996, 998, 1242, 1246, 1264, 1268, 1284, 1340, 1345, 1441, 1473,
+                              1649, 1664, 1670, 1671, 1684, 1721, 1758, 1767, 1784, 1868, 1869,
+                              1876, 3906, 9999, 9999, 9999, 9999, 9999, 9999, 9999, 9999, 9999,
+                              9999, 9999, 9999, 9999, 9999, 9999, 9999, 9999, 9999, 9999, 9999,
+                              9999, 9999, 9999, 9999, 9999, 9999, 9999, 9999};
+
+// converts the 'integer' version of the calling code (i.e. the 'real' calling code)
+//
+unsigned char cc2uc(unsigned int x) {
+  if (x == 61) {
+    return 0;
+  }
+  int j = 0;
+  if (x >= CC[j + 128]) j += 128;
+  if (x >= CC[j + 64]) j += 64;
+  if (x >= CC[j + 32]) j += 32;
+  if (x >= CC[j + 16]) j += 16;
+  if (x >= CC[j + 8]) j += 8;
+  if (x >= CC[j + 4]) j += 4;
+  if (x >= CC[j + 2]) j += 2;
+  if (x >= CC[j + 1]) j += 1;
+  return j;
+}
+
+SEXP EncodeCC(SEXP x) {
+  if (!isInteger(x)) {
+    return x;
+  }
+  unsigned int x0 = INTEGER_ELT(x, 0);
+  return ScalarRaw(cc2uc(x0));
+}
+
+SEXP DecodeCC__(SEXP x) {
+  if (TYPEOF(x) != RAWSXP) {
+    return x;
+  }
+  unsigned int x0 = RAW_ELT(x, 0);
+
+  return ScalarInteger(CC[x0]);
+}
 
 
 SEXP Cgsub_09(SEXP xx) {
@@ -57,135 +118,6 @@ SEXP Cgsub_09(SEXP xx) {
   return ans;
 }
 
-// bool jchar_is_number(const char * x, int j) {
-//   return isdigit(x[j]);
-// }
-//
-// bool jchars_are_numbers(int jj0, int jj1, int jj2, const char * x, int n, int j) {
-//   int j0 = jj0 + j;
-//   int j1 = jj1 + j;
-//   int j2 = jj2 + j;
-//   return j2 < n && jchar_is_number(x, j0) && jchar_is_number(x, j1) && jchar_is_number(x, j2);
-// }
-//
-//
-//
-// int is_04mobile_from(const char * x, int n, char char1) {
-//
-//   if (n == 10) {
-//     if (x[0] == '0' &&
-//         x[1] == '4' &&
-//         jchar_is_number(x, 2) &&
-//         jchar_is_number(x, 3) &&
-//
-//         jchar_is_number(x, 4) &&
-//         jchar_is_number(x, 5) &&
-//         jchar_is_number(x, 6) &&
-//
-//         jchar_is_number(x, 7) &&
-//         jchar_is_number(x, 8) &&
-//         jchar_is_number(x, 9)) {
-//       return 9;
-//     }
-//     return 0;
-//   }
-//   if (n == 9) {
-//     if (x[0] == '4' &&
-//         jchar_is_number(x, 1) &&
-//         jchar_is_number(x, 2) &&
-//
-//         jchar_is_number(x, 3) &&
-//         jchar_is_number(x, 4) &&
-//         jchar_is_number(x, 5) &&
-//
-//         jchar_is_number(x, 6) &&
-//         jchar_is_number(x, 7) &&
-//         jchar_is_number(x, 8)) {
-//       return 8;
-//     }
-//     return 0;
-//   }
-//   if (n == 15) {
-//     if (x[0] == '+' && x[1] == '6' && x[2] == '1' &&
-//         x[3] == ' ' && x[4] == '4' &&
-//         jchar_is_number(x, 5) &&
-//         jchar_is_number(x, 6) &&
-//
-//         jchar_is_number(x, 8) &&
-//         jchar_is_number(x, 9) &&
-//         jchar_is_number(x, 10) &&
-//
-//         jchar_is_number(x, 12) &&
-//         jchar_is_number(x, 13) &&
-//         jchar_is_number(x, 14)) {
-//       return 14;
-//     }
-//     return 0;
-//   }
-//
-//
-//   int j = 0;
-//   // start from the digit just before the first '4' in the number
-//   // +614 we advance until we hit a plus
-//   //  614 we advance until we hit a 6
-//   while (char1 == '+' && j < n && x[j] == '+') {
-//     ++j;
-//   }
-//   while (char1 != '0' && j < n && x[j] == '6') {
-//     ++j;
-//   }
-//   while (x[j] == ' ') {
-//     ++j;
-//   }
-//   for (; j < n - 9; ++j) {
-//     if (char1 == '0') {
-//       if (x[j] != '0' || x[j + 1] != '4') {
-//         ++j;
-//         continue;
-//       }
-//     } else {
-//       if (x[j] != '1' || x[j + 1] != '4') {
-//         ++j;
-//         continue;
-//       }
-//     }
-//     if (!jchars_are_numbers(2, 3, 3, x, n, j)) {
-//       continue;
-//     }
-//     if (jchars_are_numbers(4, 5, 6, x, n, j)) {
-//       if (jchars_are_numbers(7, 8, 9, x, n, j)) {
-//         return j + 9;
-//       }
-//       if (x[j + 7] == ' ' &&
-//           jchars_are_numbers(8, 9, 10, x, n, j)) {
-//         return j + 10;
-//       }
-//       continue;
-//     }
-//     if (x[j + 4] == ' ' &&
-//         jchars_are_numbers(5, 6, 7, x, n, j)) {
-//       if (x[j + 8] == ' ' &&
-//           jchars_are_numbers(9, 10, 11, x, n, j)) {
-//         return j + 11;
-//       }
-//       if (jchars_are_numbers(8, 9, 10, x, n, j)) {
-//         return j + 10;
-//       }
-//       j += 4;
-//     }
-//
-//
-//   }
-//   return 0;
-// }
-//
-// int is_au_landline(const char * x, int n) {
-//   switch(n) {
-//   case 27:
-//     return 0;
-//   }
-//   return 0;
-// }
 
 
 int extract_au_mobile(const char * x, int n) {
@@ -258,6 +190,9 @@ int extract_au_mobile(const char * x, int n) {
 
 
 SEXP CStandardMobile(SEXP xx) {
+  if (isInteger(xx)) {
+    return xx; // # nocov
+  }
   if (!isString(xx)) {
     error("`mob` was type '%s' but must be type character", type2char(TYPEOF(xx))); // # nocov
   }
@@ -270,7 +205,7 @@ SEXP CStandardMobile(SEXP xx) {
   for (R_xlen_t i = 0; i < N; ++i) {
     SEXP CX = xp[i];
     int n = length(CX);
-    intp[i] = 0;
+    intp[i] = 61;
     ansp[i] = NA_INTEGER;
 
     const char * x = CHAR(CX);
@@ -278,7 +213,41 @@ SEXP CStandardMobile(SEXP xx) {
     if (au_mob > 0) {
       ansp[i] = au_mob;
       intp[i] = 61;
+      continue;
     }
+    unsigned int intl_cd = 0;
+    unsigned int intl_mob = 0;
+    int j1 = 0;
+    while (j1 < n && x[j1] != '+') {
+      ++j1;
+    }
+    if (j1 == n) {
+      continue;
+    }
+    while (++j1 < n) {
+      char xj = x[j1];
+      if (!isdigit(xj) || intl_cd >= 256) {
+        break;
+      }
+      intl_cd = (intl_cd << 1) + (intl_cd << 3);
+      intl_cd += xj - '0';
+    }
+    // after intl code
+    while (++j1 < n) {
+      char xj = x[j1];
+      if (!isdigit(xj)) {
+        if (xj != '-' && xj != ' ') {
+          break;
+        }
+        continue;
+      }
+      intl_mob = (intl_mob << 1) + (intl_mob << 3);
+      intl_mob += xj - '0';
+    }
+    intp[i] = cc2uc(intl_cd);
+    ansp[i] = (intl_mob > 1e7 && intl_mob < INT_MAX) ? intl_mob : NA_INTEGER;
+
+
   }
   SEXP List = PROTECT(allocVector(VECSXP, 2));
   SET_VECTOR_ELT(List, 0, ans);
@@ -291,39 +260,70 @@ int extract_landline(const char * x, int n, unsigned int area_cd) {
   if (n < 8) {
     return NA_INTEGER;
   }
-  unsigned int o = area_cd;
+
   if (n == 8) {
-    o += atoi(x);
+    unsigned int o = atoi(x);
+    o += area_cd;
     return intIsAusRange(o, true) ? o : NA_INTEGER;
   }
-  int ten = 1;
-  if (n == 10) {
-    for (int j = 9; j >= 2; --j) {
-      o += ten * char2number(x[j]);
-      ten *= 10;
+  if (n == 9) {
+    // "9876 5432"
+    // or
+    // "398765432"
+    // Parse then if a space then add area_cd, otherwise the first digit
+    // ought to be the area code
+    bool has_space = false;
+    unsigned int o = 0;
+    for (int j = 0; j < n; ++j) {
+      char xj = x[j];
+      if (!isdigit(xj)) {
+        // spaces are ok between digits (but only once)
+        if (xj == ' ') {
+          has_space = true;
+          continue;
+        }
+        // if it's not a digit or space, possibly extraneous text
+        // hopefully the mobile is formed but we shouldn't add digits
+        // trailing this text
+        break;
+      }
+      // Same as o *= 10 but for unsigned int to avoid overflow
+      o = (o << 1) + (o << 3);
+      o += xj - '0';
     }
-    return o;
+    if (has_space) {
+      o += area_cd;
+    }
+    return intIsAusRange(o, true) ? o : NA_INTEGER;
+  }
+  if (n == 10) {
+    unsigned int o = 0;
+
+    for (int j = 0; j < n; ++j) {
+      char xj = x[j];
+      if (!isdigit(xj)) {
+        // spaces are ok between digits
+        if (xj == ' ') {
+          continue;
+        }
+        // if it's not a digit or space, possibly extraneous text
+        // hopefully the mobile is formed but we shouldn't add digits
+        // trailing this text
+        break;
+      }
+      // Same as o *= 10 but for unsigned int to avoid overflow
+      o = (o << 1) + (o << 3);
+      o += xj - '0';
+    }
+    if (o < 1e8 && o > 1e7) {
+      o += area_cd;
+    }
+    return intIsAusRange(o, true) ? o : NA_INTEGER;
   }
 
-  // if (n == 12 && x[0] == '(' && x[3] == ')') {
-  //   for (int j = n - 1; j >= 4; --j) {
-  //     if (ten > 1e8) {
-  //       break;
-  //     }
-  //     if (isdigit(x[j])) {
-  //       o += ten * char2number(x[j]);
-  //       ten *= 10;
-  //     }
-  //   }
-  //
-  //   if (isdigit(x[2])) {
-  //     o += 1e8 * (x[2] - '0');
-  //   }
-  //   return o;
-  // }
   if (x[0] == '(' && x[3] == ')') {
 
-    o = isdigit(x[2]) ? x[2] - '0' : (area_cd / 1e8);
+    unsigned int o = isdigit(x[2]) ? x[2] - '0' : (area_cd / 1e8);
 
     for (int j = 4; j < n; ++j) {
       char xj = x[j];
@@ -344,9 +344,11 @@ int extract_landline(const char * x, int n, unsigned int area_cd) {
     return intIsAusRange(o, false) ? o : NA_INTEGER;
   }
 
+  unsigned int ten = 1;
+  unsigned int o = 0;
   for (int j = n - 1; j >= 0; --j) {
     char xj = x[j];
-    if (o > 1e8) {
+    if (o > 1e7) {
       if (isdigit(xj)) {
         o += ten * (x[j] - '0');
         break;
@@ -358,6 +360,10 @@ int extract_landline(const char * x, int n, unsigned int area_cd) {
     if (isdigit(xj)) {
       o += ten * (x[j] - '0');
       ten *= 10;
+    } else {
+      if (xj != ' ') {
+        return NA_INTEGER;
+      }
     }
   }
   return intIsAusRange(o, false) ? o : NA_INTEGER;
@@ -443,34 +449,7 @@ SEXP C_Mobile_Home(SEXP xx, SEXP yy, SEXP AreaCd) {
 
 }
 
-SEXP C_iMobileiHome(SEXP x, SEXP y) {
-  R_xlen_t N = xlength(x);
-  if (N != xlength(y)) {
-    error("N != xlength(y)"); // # nocov
-  }
-  if (!isInteger(x) || !isInteger(y)) {
-    error("`x` and `y` were not both integer vectors."); // # nocov
-  }
-  int * xp = INTEGER(x);
-  int * yp = INTEGER(y);
 
-  for (R_xlen_t i = 0; i < N; ++i) {
-    int xpi = xp[i];
-    int ypi = yp[i];
-
-    // note that if ypi = na then the below is false
-    bool toggle = intIsMobRange(ypi) && !intIsMobRange(xpi);
-    if (toggle) {
-      xp[i] = ypi;
-      yp[i] = xpi;
-    }
-  }
-  SEXP List = PROTECT(allocVector(VECSXP, 2));
-  SET_VECTOR_ELT(List, 0, x);
-  SET_VECTOR_ELT(List, 1, y);
-  UNPROTECT(1);
-  return List;
-}
 
 SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
   R_xlen_t N = xlength(Mob);
@@ -485,6 +464,7 @@ SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
 
   bool above_top = true;
   int n_digits_last = log10(N);
+  bool long_vec = sizeof(R_xlen_t) > sizeof(int);
 
   for (R_xlen_t i = 0; i < N; ++i) {
     if (i > topn && i < (N - topn)) {
@@ -497,8 +477,14 @@ SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
       }
       continue;
     }
-    unsigned char cci = use_ccd ? ccd[i] : 61;
-    unsigned int ucci = cci;
+
+
+    unsigned int ucci = 61;
+    if (use_ccd) {
+      unsigned int uccj = ccd[i];
+      ucci = CC[uccj];
+    }
+
     int mobi = mob[i];
     if (mobi <= 0) {
       if (i <= topn) {
@@ -506,7 +492,13 @@ SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
           Rprintf(" ");
         }
       }
-      Rprintf("%lld: NA\n");
+      if (long_vec) {
+        Rprintf("%lld: NA\n", i + 1);
+      } else {
+        if (i < INT_MAX) {
+          Rprintf("%d: NA\n", i + 1);
+        }
+      }
       continue;
     }
 
@@ -518,9 +510,47 @@ SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
         Rprintf(" ");
       }
     }
-    Rprintf("%lld: +%d %03d %03d %03d\n", i + 1, ucci, m1, m2, m3);
+    if (long_vec) {
+      Rprintf("%lld: +%d %03d %03d %03d\n", i + 1, ucci, m1, m2, m3);
+    } else {
+      if (i < INT_MAX) {
+        Rprintf("%d: +%d %03d %03d %03d\n", i + 1, ucci, m1, m2, m3);
+      }
+    }
   }
   return R_NilValue;
 }
 
+// SEXP FormatMobile(SEXP Mob, SEXP Ccd) {
+//   R_xlen_t N = xlength(Mob);
+//   if (!isInteger(Mob) || (TYPEOF(Ccd) != RAWSXP)) {
+//     warning("Internal error: Mob and Ccd not INTSXP and RAWSXP of equal length."); // # nocov
+//     return R_NilValue; // # nocov
+//   }
+//   const bool use_ccd = xlength(Ccd) == N;
+//   const unsigned char * ccd = RAW(Ccd);
+//   const int * mob = INTEGER(Mob);
+//   SEXP ans = PROTECT(allocVector(STRSXP, N));
+//
+//   for (R_xlen_t i = 0; i < N; ++i) {
+//     unsigned int ucci = 61;
+//     if (use_ccd) {
+//       unsigned int uccj = ccd[i];
+//       ucci = CC[uccj];
+//     }
+//
+//     int mobi = mob[i];
+//     if (mobi <= 0) {
+//       SET_STRING_ELT(ans, i, NA_STRING);
+//       continue;
+//     }
+//
+//     int m3 = mobi % 1000;
+//     int m2 = (mobi / 1000) % 1000;
+//     int m1 = (mobi / 1000000) % 1000;
+//     char o[18];
+//     snprintf(o, 18, "+%d %03d %03d %03d", ucci, m1, m2, m3);
+//   }
+//   return R_NilValue;
+// }
 
