@@ -451,7 +451,7 @@ SEXP C_Mobile_Home(SEXP xx, SEXP yy, SEXP AreaCd) {
 
 
 
-SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
+SEXP PrintMobile(SEXP Mob, SEXP Ccd, SEXP doLongVec) {
   R_xlen_t N = xlength(Mob);
   if (!isInteger(Mob) || (TYPEOF(Ccd) != RAWSXP)) {
     warning("Internal error: Mob and Ccd not INTSXP and RAWSXP of equal length."); // # nocov
@@ -464,7 +464,8 @@ SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
 
   bool above_top = true;
   int n_digits_last = log10(N);
-  bool long_vec = sizeof(R_xlen_t) > sizeof(int);
+  // bool long_vec = sizeof(R_xlen_t) > sizeof(int);
+  bool long_vec = asLogical(doLongVec);
 
   for (R_xlen_t i = 0; i < N; ++i) {
     if (i > topn && i < (N - topn)) {

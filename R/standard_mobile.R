@@ -101,7 +101,9 @@ print.dauphin_mobile <- function(x, ...) {
     CCD <- raw(0)
   }
 
-  invisible(.Call("PrintMobile", MOB, CCD, PACKAGE = packageName()))
+  doLongVec <- .Machine$sizeof.pointer == 8L && isTRUE(capabilities("long.double")) && isTRUE(getOption(".dauphin.long.vec", TRUE))
+
+  invisible(.Call("PrintMobile", MOB, CCD, doLongVec, PACKAGE = packageName()))
 }
 
 intl_calling_code_reqd <- function(mob) {

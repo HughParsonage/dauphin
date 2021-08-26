@@ -16,7 +16,7 @@ extern SEXP Cgsub_09(SEXP);
 extern SEXP CStandardMobile(SEXP);
 extern SEXP DecodeCC__(SEXP, SEXP);
 extern SEXP EncodeCC(SEXP, SEXP);
-extern SEXP PrintMobile(SEXP, SEXP);
+extern SEXP PrintMobile(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
     {"C_CCRequired",      (DL_FUNC) &C_CCRequired,      2},
@@ -27,7 +27,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"CStandardMobile",   (DL_FUNC) &CStandardMobile,   1},
     {"DecodeCC__",        (DL_FUNC) &DecodeCC__,        2},
     {"EncodeCC",          (DL_FUNC) &EncodeCC,          2},
-    {"PrintMobile",       (DL_FUNC) &PrintMobile,       2},
+    {"PrintMobile",       (DL_FUNC) &PrintMobile,       3},
     {NULL, NULL, 0}
 };
 
