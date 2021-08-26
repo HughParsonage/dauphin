@@ -1,5 +1,6 @@
 #include "dauphin.h"
 
+
 bool intIsMobRange(unsigned int ux) {
   ux -= 400000000;
   return ux < 100000000;
@@ -20,7 +21,7 @@ bool intIsAusRange(unsigned int ux, bool mob_ok) {
 
 SEXP Cgsub_09(SEXP xx) {
   if (!isString(xx)) {
-    error("xx was type '%s' but must be a character vector.", type2char(TYPEOF(xx)));
+    error("xx was type '%s' but must be a character vector.", type2char(TYPEOF(xx))); // # nocov
   }
   R_xlen_t N = xlength(xx);
   SEXP ans = PROTECT(allocVector(INTSXP, N));
@@ -56,135 +57,135 @@ SEXP Cgsub_09(SEXP xx) {
   return ans;
 }
 
-bool jchar_is_number(const char * x, int j) {
-  return isdigit(x[j]);
-}
-
-bool jchars_are_numbers(int jj0, int jj1, int jj2, const char * x, int n, int j) {
-  int j0 = jj0 + j;
-  int j1 = jj1 + j;
-  int j2 = jj2 + j;
-  return j2 < n && jchar_is_number(x, j0) && jchar_is_number(x, j1) && jchar_is_number(x, j2);
-}
-
-
-
-int is_04mobile_from(const char * x, int n, char char1) {
-
-  if (n == 10) {
-    if (x[0] == '0' &&
-        x[1] == '4' &&
-        jchar_is_number(x, 2) &&
-        jchar_is_number(x, 3) &&
-
-        jchar_is_number(x, 4) &&
-        jchar_is_number(x, 5) &&
-        jchar_is_number(x, 6) &&
-
-        jchar_is_number(x, 7) &&
-        jchar_is_number(x, 8) &&
-        jchar_is_number(x, 9)) {
-      return 9;
-    }
-    return 0;
-  }
-  if (n == 9) {
-    if (x[0] == '4' &&
-        jchar_is_number(x, 1) &&
-        jchar_is_number(x, 2) &&
-
-        jchar_is_number(x, 3) &&
-        jchar_is_number(x, 4) &&
-        jchar_is_number(x, 5) &&
-
-        jchar_is_number(x, 6) &&
-        jchar_is_number(x, 7) &&
-        jchar_is_number(x, 8)) {
-      return 8;
-    }
-    return 0;
-  }
-  if (n == 15) {
-    if (x[0] == '+' && x[1] == '6' && x[2] == '1' &&
-        x[3] == ' ' && x[4] == '4' &&
-        jchar_is_number(x, 5) &&
-        jchar_is_number(x, 6) &&
-
-        jchar_is_number(x, 8) &&
-        jchar_is_number(x, 9) &&
-        jchar_is_number(x, 10) &&
-
-        jchar_is_number(x, 12) &&
-        jchar_is_number(x, 13) &&
-        jchar_is_number(x, 14)) {
-      return 14;
-    }
-    return 0;
-  }
-
-
-  int j = 0;
-  // start from the digit just before the first '4' in the number
-  // +614 we advance until we hit a plus
-  //  614 we advance until we hit a 6
-  while (char1 == '+' && j < n && x[j] == '+') {
-    ++j;
-  }
-  while (char1 != '0' && j < n && x[j] == '6') {
-    ++j;
-  }
-  while (x[j] == ' ') {
-    ++j;
-  }
-  for (; j < n - 9; ++j) {
-    if (char1 == '0') {
-      if (x[j] != '0' || x[j + 1] != '4') {
-        ++j;
-        continue;
-      }
-    } else {
-      if (x[j] != '1' || x[j + 1] != '4') {
-        ++j;
-        continue;
-      }
-    }
-    if (!jchars_are_numbers(2, 3, 3, x, n, j)) {
-      continue;
-    }
-    if (jchars_are_numbers(4, 5, 6, x, n, j)) {
-      if (jchars_are_numbers(7, 8, 9, x, n, j)) {
-        return j + 9;
-      }
-      if (x[j + 7] == ' ' &&
-          jchars_are_numbers(8, 9, 10, x, n, j)) {
-        return j + 10;
-      }
-      continue;
-    }
-    if (x[j + 4] == ' ' &&
-        jchars_are_numbers(5, 6, 7, x, n, j)) {
-      if (x[j + 8] == ' ' &&
-          jchars_are_numbers(9, 10, 11, x, n, j)) {
-        return j + 11;
-      }
-      if (jchars_are_numbers(8, 9, 10, x, n, j)) {
-        return j + 10;
-      }
-      j += 4;
-    }
-
-
-  }
-  return 0;
-}
-
-int is_au_landline(const char * x, int n) {
-  switch(n) {
-  case 27:
-    return 0;
-  }
-  return 0;
-}
+// bool jchar_is_number(const char * x, int j) {
+//   return isdigit(x[j]);
+// }
+//
+// bool jchars_are_numbers(int jj0, int jj1, int jj2, const char * x, int n, int j) {
+//   int j0 = jj0 + j;
+//   int j1 = jj1 + j;
+//   int j2 = jj2 + j;
+//   return j2 < n && jchar_is_number(x, j0) && jchar_is_number(x, j1) && jchar_is_number(x, j2);
+// }
+//
+//
+//
+// int is_04mobile_from(const char * x, int n, char char1) {
+//
+//   if (n == 10) {
+//     if (x[0] == '0' &&
+//         x[1] == '4' &&
+//         jchar_is_number(x, 2) &&
+//         jchar_is_number(x, 3) &&
+//
+//         jchar_is_number(x, 4) &&
+//         jchar_is_number(x, 5) &&
+//         jchar_is_number(x, 6) &&
+//
+//         jchar_is_number(x, 7) &&
+//         jchar_is_number(x, 8) &&
+//         jchar_is_number(x, 9)) {
+//       return 9;
+//     }
+//     return 0;
+//   }
+//   if (n == 9) {
+//     if (x[0] == '4' &&
+//         jchar_is_number(x, 1) &&
+//         jchar_is_number(x, 2) &&
+//
+//         jchar_is_number(x, 3) &&
+//         jchar_is_number(x, 4) &&
+//         jchar_is_number(x, 5) &&
+//
+//         jchar_is_number(x, 6) &&
+//         jchar_is_number(x, 7) &&
+//         jchar_is_number(x, 8)) {
+//       return 8;
+//     }
+//     return 0;
+//   }
+//   if (n == 15) {
+//     if (x[0] == '+' && x[1] == '6' && x[2] == '1' &&
+//         x[3] == ' ' && x[4] == '4' &&
+//         jchar_is_number(x, 5) &&
+//         jchar_is_number(x, 6) &&
+//
+//         jchar_is_number(x, 8) &&
+//         jchar_is_number(x, 9) &&
+//         jchar_is_number(x, 10) &&
+//
+//         jchar_is_number(x, 12) &&
+//         jchar_is_number(x, 13) &&
+//         jchar_is_number(x, 14)) {
+//       return 14;
+//     }
+//     return 0;
+//   }
+//
+//
+//   int j = 0;
+//   // start from the digit just before the first '4' in the number
+//   // +614 we advance until we hit a plus
+//   //  614 we advance until we hit a 6
+//   while (char1 == '+' && j < n && x[j] == '+') {
+//     ++j;
+//   }
+//   while (char1 != '0' && j < n && x[j] == '6') {
+//     ++j;
+//   }
+//   while (x[j] == ' ') {
+//     ++j;
+//   }
+//   for (; j < n - 9; ++j) {
+//     if (char1 == '0') {
+//       if (x[j] != '0' || x[j + 1] != '4') {
+//         ++j;
+//         continue;
+//       }
+//     } else {
+//       if (x[j] != '1' || x[j + 1] != '4') {
+//         ++j;
+//         continue;
+//       }
+//     }
+//     if (!jchars_are_numbers(2, 3, 3, x, n, j)) {
+//       continue;
+//     }
+//     if (jchars_are_numbers(4, 5, 6, x, n, j)) {
+//       if (jchars_are_numbers(7, 8, 9, x, n, j)) {
+//         return j + 9;
+//       }
+//       if (x[j + 7] == ' ' &&
+//           jchars_are_numbers(8, 9, 10, x, n, j)) {
+//         return j + 10;
+//       }
+//       continue;
+//     }
+//     if (x[j + 4] == ' ' &&
+//         jchars_are_numbers(5, 6, 7, x, n, j)) {
+//       if (x[j + 8] == ' ' &&
+//           jchars_are_numbers(9, 10, 11, x, n, j)) {
+//         return j + 11;
+//       }
+//       if (jchars_are_numbers(8, 9, 10, x, n, j)) {
+//         return j + 10;
+//       }
+//       j += 4;
+//     }
+//
+//
+//   }
+//   return 0;
+// }
+//
+// int is_au_landline(const char * x, int n) {
+//   switch(n) {
+//   case 27:
+//     return 0;
+//   }
+//   return 0;
+// }
 
 
 int extract_au_mobile(const char * x, int n) {
@@ -193,7 +194,15 @@ int extract_au_mobile(const char * x, int n) {
   }
   unsigned int o = 0;
   if (n <= 10) {
-    o = atoi(x);
+    int j1 = x[0] == '0';
+    for (int j = j1; j < n; ++j) {
+      char xj = x[j];
+      if (!isdigit(xj)) {
+        return NA_INTEGER;
+      }
+      o = (o << 1) + (o << 3);
+      o += xj - '0';
+    }
     return intIsMobRange(o) ? o : NA_INTEGER;
   }
 
@@ -250,7 +259,7 @@ int extract_au_mobile(const char * x, int n) {
 
 SEXP CStandardMobile(SEXP xx) {
   if (!isString(xx)) {
-    error("Expected string.");
+    error("`mob` was type '%s' but must be type character", type2char(TYPEOF(xx))); // # nocov
   }
   R_xlen_t N = xlength(xx);
   const SEXP * xp = STRING_PTR(xx);
@@ -263,16 +272,12 @@ SEXP CStandardMobile(SEXP xx) {
     int n = length(CX);
     intp[i] = 0;
     ansp[i] = NA_INTEGER;
-    if (n < 9) {
-      continue;
-    }
 
     const char * x = CHAR(CX);
     int au_mob = extract_au_mobile(x, n);
     if (au_mob > 0) {
       ansp[i] = au_mob;
       intp[i] = 61;
-      continue;
     }
   }
   SEXP List = PROTECT(allocVector(VECSXP, 2));
@@ -361,7 +366,7 @@ int extract_landline(const char * x, int n, unsigned int area_cd) {
 
 
 
-SEXP CStandardHomePh(SEXP xx, SEXP AreaCd) {
+SEXP C_DauphinLandline(SEXP xx, SEXP AreaCd) {
   const unsigned int area_cd = asInteger(AreaCd);
   if (!intIsAusRange(area_cd, false)) {
     error("`area_cd = %u` which is not a permitted area code.", area_cd); // # nocov
@@ -441,10 +446,10 @@ SEXP C_Mobile_Home(SEXP xx, SEXP yy, SEXP AreaCd) {
 SEXP C_iMobileiHome(SEXP x, SEXP y) {
   R_xlen_t N = xlength(x);
   if (N != xlength(y)) {
-    error("N != xlength(y)");
+    error("N != xlength(y)"); // # nocov
   }
   if (!isInteger(x) || !isInteger(y)) {
-    error("`x` and `y` were not both integer vectors.");
+    error("`x` and `y` were not both integer vectors."); // # nocov
   }
   int * xp = INTEGER(x);
   int * yp = INTEGER(y);
@@ -470,8 +475,8 @@ SEXP C_iMobileiHome(SEXP x, SEXP y) {
 SEXP PrintMobile(SEXP Mob, SEXP Ccd) {
   R_xlen_t N = xlength(Mob);
   if (!isInteger(Mob) || (TYPEOF(Ccd) != RAWSXP)) {
-    warning("Internal error: Mob and Ccd not INTSXP and RAWSXP of equal length.");
-    return R_NilValue;
+    warning("Internal error: Mob and Ccd not INTSXP and RAWSXP of equal length."); // # nocov
+    return R_NilValue; // # nocov
   }
   const bool use_ccd = xlength(Ccd) == N;
   const unsigned char * ccd = RAW(Ccd);

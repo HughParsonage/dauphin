@@ -54,19 +54,27 @@ dauphin_mobile <- function(mob, ignore_calling_code = NA) {
   ans
 }
 
+#' @rdname dauphin_mobile
+#' @export
+dauphin_landline <- function(landline, default_area_code = getOption("daiphin.default_landline", 1L)) {
+  if (is.character(default_area_code <- check_area_cd(default_area_code))) {
+    stop(default_area_code)
+  }
+  .Call("C_DauphinLandline", landline, default_area_code, PACKAGE = packageName())
+}
+
+
 dauphin_mobile_cc <- function(x) {
   .Call("CStandardMobile", x, PACKAGE = packageName())
 }
 
 #' @rdname dauphin_mobile
 #' @export
-dauphin_mobile_landline <- function(mob, landline, default_landline = getOption("dauphin.default_landline", 1L)) {
-  stopifnot(is.integer(default_landline),
-            length(default_landline) == 1,
-            !is.na(default_landline),
-            default_landline >= 0L,
-            default_landline <= 9L)
-  ans <- .Call("C_Mobile_Home", mob, landline, default_landline * 1e8L, PACKAGE = packageName())
+dauphin_mobile_landline <- function(mob, landline, default_area_code = getOption("dauphin.default_landline", 1L)) {
+  if (is.character(default_area_code <- check_area_cd(default_area_code))) {
+    stop(default_area_code)
+  }
+  ans <- .Call("C_Mobile_Home", mob, landline, default_area_code, PACKAGE = packageName())
 }
 
 #' @rdname dauphin_mobile
@@ -85,6 +93,22 @@ print.dauphin_mobile <- function(x, ...) {
 
 intl_calling_code_reqd <- function(mob) {
   .Call("C_CCRequired", mob, NA, PACKAGE = packageName())
+}
+
+check_area_cd <- function(area_cd) {
+  if (!is.numeric(area_cd)) {
+    return(paste0("`area_cd` was type '", typeof(area_cd), "' but must be integer."))
+  }
+  if (length(area_cd) != 1L) {
+    return(paste0("`length(area_cd) = ", length(area_cd), "` but must be length-one."))
+  }
+  if (is.na(area_cd)) {
+    return(paste0("`area_cd = NA` but this is not permitted."))
+  }
+  if (area_cd <= 0L || area_cd >= 10L) {
+    return(paste0("`area_cd = ", area_cd, "` but must be between 1 and 10."))
+  }
+  as.integer(area_cd) * 1e8L
 }
 
 
