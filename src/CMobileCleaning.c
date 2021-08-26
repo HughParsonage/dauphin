@@ -62,21 +62,35 @@ unsigned char cc2uc(unsigned int x) {
   return j;
 }
 
-SEXP EncodeCC(SEXP x) {
+SEXP EncodeIntCC(SEXP x) {
   if (!isInteger(x)) {
-    return x;
+    return x; // # nocov
   }
-  unsigned int x0 = INTEGER_ELT(x, 0);
-  return ScalarRaw(cc2uc(x0));
+  R_xlen_t N = xlength(x);
+  const int * xp = INTEGER(x);
+  SEXP ans = PROTECT(allocVector(RAWSXP, N));
+  unsigned char * restrict ansp = RAW(ans);
+  for (R_xlen_t i = 0; i < N; ++i) {
+    ansp[i] = cc2uc(xp[i]);
+  }
+  UNPROTECT(1);
+  return ans;
 }
 
-SEXP DecodeCC__(SEXP x) {
+SEXP DecodeRawCC(SEXP x) {
   if (TYPEOF(x) != RAWSXP) {
-    return x;
+    return x; // # nocov
   }
-  unsigned int x0 = RAW_ELT(x, 0);
-
-  return ScalarInteger(CC[x0]);
+  R_xlen_t N = xlength(x);
+  const unsigned char * xp = RAW(x);
+  SEXP ans = PROTECT(allocVector(INTSXP, N));
+  int * restrict ansp = INTEGER(ans);
+  for (R_xlen_t i = 0; i < N; ++i) {
+    unsigned int j = xp[i];
+    ansp[i] = CC[j];
+  }
+  UNPROTECT(1);
+  return ans;;
 }
 
 
@@ -212,7 +226,7 @@ SEXP CStandardMobile(SEXP xx) {
     int au_mob = extract_au_mobile(x, n);
     if (au_mob > 0) {
       ansp[i] = au_mob;
-      intp[i] = 61;
+      intp[i] = cc2uc(61);
       continue;
     }
     unsigned int intl_cd = 0;
@@ -379,7 +393,7 @@ SEXP C_DauphinLandline(SEXP xx, SEXP AreaCd) {
   }
   R_xlen_t N = xlength(xx);
   if (!isString(xx)) {
-    return xx;
+    return xx; // # nocov
   }
   SEXP ans = PROTECT(allocVector(INTSXP, N));
   int * restrict ansp = INTEGER(ans);
@@ -387,7 +401,7 @@ SEXP C_DauphinLandline(SEXP xx, SEXP AreaCd) {
   for (R_xlen_t i = 0; i < N; ++i) {
     int n = length(xp[i]);
     ansp[i] = NA_INTEGER;
-    if (n < 8 || n == 27 || n == 25) {
+    if (n >= 25 && n <= 27) {
       //  Mobile Number Not Provide
       continue; // 0Mobile Number Not Provided
     }

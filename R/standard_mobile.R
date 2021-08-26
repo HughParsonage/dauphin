@@ -70,10 +70,6 @@ dauphin_landline <- function(landline, default_area_code = getOption("daiphin.de
 }
 
 
-dauphin_mobile_cc <- function(x) {
-  .Call("CStandardMobile", x, PACKAGE = packageName())
-}
-
 #' @rdname dauphin_mobile
 #' @export
 dauphin_mobile_landline <- function(mob, landline, default_area_code = getOption("dauphin.default_area_code", 1L)) {
@@ -106,8 +102,30 @@ print.dauphin_mobile <- function(x, ...) {
   invisible(.Call("PrintMobile", MOB, CCD, doLongVec, PACKAGE = packageName()))
 }
 
+format_dauphin_mobile <- function(x, ...) {
+  if (is.atomic(x)) {
+    MOB <- x
+  } else {
+    MOB <- .subset2(x, 1L)
+  }
+  N <- length(MOB)
+  CCD <- raw()
+  if (!is.atomic(x) && length(x) >= 2L) {
+    CCD <- .subset2(x, 2L)
+  }
+  if (!is.raw(CCD) || length(CCD) != N) {
+    sprintf("+61 %03d %03d %03d", (MOB %/% 1e6L) %% 1000L, (MOB %/% 1e3L) %% 1000L, MOB %% 1000L)
+  } else {
+    cc_int <- DecodeCC(CCD)
+    ifelse(cc_int == 61L,
+           sprintf("+61 %03d %03d %03d", (MOB %/% 1e6L) %% 1000L, (MOB %/% 1e3L) %% 1000L, MOB %% 1000L),
+           # Can't be sure of the format of foreign mobiles
+           sprintf("+%d %d", cc_int, MOB))
+  }
+}
+
 intl_calling_code_reqd <- function(mob) {
-  .Call("C_CCRequired", mob, NA, PACKAGE = packageName())
+  .Call("C_CCRequired", mob, NA, PACKAGE = packageName()) # nocov
 }
 
 check_area_cd <- function(area_cd) {
@@ -127,10 +145,10 @@ check_area_cd <- function(area_cd) {
 }
 
 EEncodeCC <- function(x) {
-  .Call("EncodeCC", x, PACKGE = packageName())
+  .Call("EncodeIntCC", x, PACKGE = packageName())
 }
 
 DecodeCC <- function(x) {
-  .Call("DecodeCC__", x, PACKGE = packageName())
+  .Call("DecodeRawCC", x, PACKGE = packageName())
 }
 

@@ -47,6 +47,7 @@ expect_true(is.na(dauphin_landline("(03)9888/7777")))
 expect_true(is.na(dauphin_landline("", default_area_code = 5L)))
 expect_true(is.na(dauphin_landline("NA", default_area_code = 5L)))
 expect_true(is.na(dauphin_landline(NA_character_, default_area_code = 5L)))
+expect_equal(dauphin_landline("0400123456"), 400123456)
 
 
 expect_equal(dauphin_mobile_landline("0400 000 000", "(03)9876 5432", 2L),
@@ -74,20 +75,29 @@ expect_true(all(is.na(dauphin_mobile1(c("foo",
                                         "04xxxxxxxx",
                                         "+ZZZZZZZZZZ",
                                         "9e11")))))
+for (.dauphin.long.vec in c(FALSE, TRUE)) {
+  options(".dauphin.long.vec" = .dauphin.long.vec)
+  x <- dauphin_mobile1("0400 000 456")
+  class(x) <- "dauphin_mobile"
+  expect_stdout(print(x), "61 400 000 456")
 
-x <- dauphin_mobile1("0400 000 456")
-class(x) <- "dauphin_mobile"
-expect_stdout(print(x), "61 400 000 456")
+  x <- dauphin_mobile(c(NA_character_, rep("0400 000 456", 202)))
+  class(x) <- "dauphin_mobile"
+  expect_stdout(print(x), "--")
+  expect_stdout(print(x), "NA")
+  expect_stdout(dauphin:::print.dauphin_mobile(dauphin:::dauphin_mobile("+389 422 123 123")),
+                "[+]389")
+}
 
-x <- dauphin_mobile(c(NA_character_, rep("0400 000 456", 202)))
-class(x) <- "dauphin_mobile"
-expect_stdout(print(x), "--")
-expect_stdout(print(x), "NA")
-expect_stdout(dauphin:::print.dauphin_mobile(dauphin:::dauphin_mobile("+389 422 123 123")),
-              "[+]389")
+# Roundtrip
+expect_equal(dauphin:::DecodeCC(dauphin:::EEncodeCC(61L)), 61L)
+expect_equal(dauphin:::DecodeCC(dauphin:::EEncodeCC(44L)), 44L)
 
-# expect_equal(dauphin:::dauphin_mobile_cc("+61 422 123 123")[[2]], as.raw(61L))
-# expect_equal(dauphin:::dauphin_mobile_cc("+44 422 123 123")[[2]], as.raw(44L))
-# expect_equal(dauphin:::dauphin_mobile_cc("+971 422 123 123")[[2]], as.raw(971L))
-# expect_equal(dauphin:::dauphin_mobile_cc("+389 422 123 123")[[2]], as.raw(971L))
+# format
+format_dauphin_mobile <- dauphin:::format_dauphin_mobile
+expect_equal(format_dauphin_mobile(422123123L), "+61 422 123 123")
+expect_equal(format_dauphin_mobile(422123123L, raw(1)), "+61 422 123 123")
+expect_true(startsWith(format_dauphin_mobile(dauphin_mobile("+44 123 123 123")), "+44"))
+
+
 

@@ -8,13 +8,15 @@ bool non_au_prefix(char x0, char x1, char x2) {
 }
 
 SEXP C_CCRequired(SEXP x, SEXP ignore_calling_code) {
+  // # nocov start
   if (!isString(x)) {
     error("`x` was type '%s', but must be a character vector.", type2char(TYPEOF(x)));
   }
   if (!isLogical(ignore_calling_code) || xlength(ignore_calling_code) != 1) {
-    error("`ignore_calling_code` was a '%s' of length %llu. Change `ignore_calling_code` to TRUE, FALSE, or NA.",
-          type2char(TYPEOF(ignore_calling_code)), xlength(ignore_calling_code));
+    error("`ignore_calling_code` was a '%s' of length > 1. Change `ignore_calling_code` to TRUE, FALSE, or NA.",
+          type2char(TYPEOF(ignore_calling_code)));
   }
+  // # nocov end
   int icc = asLogical(ignore_calling_code);
   if (icc != NA_INTEGER) {
     return ScalarLogical(!icc);
