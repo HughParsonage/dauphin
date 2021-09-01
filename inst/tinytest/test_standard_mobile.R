@@ -75,6 +75,18 @@ expect_true(all(is.na(dauphin_mobile1(c("foo",
                                         "04xxxxxxxx",
                                         "+ZZZZZZZZZZ",
                                         "9e11")))))
+expect_true(all(is.na(dauphin_landline(c("foo",
+                                        "",
+                                        NA_character_,
+                                        "abcdefghiogsdfoih",
+                                        "MOBILE NUMBER NOT FOUND",
+                                        "Mobile Number Not Provide",
+                                        "Mobile Number Not Provided",
+                                        "0Mobile Number Not Provided",
+                                        "23905723097235907235790",
+                                        "04xxxxxxxx",
+                                        "+ZZZZZZZZZZ",
+                                        "9e11")))))
 for (.dauphin.long.vec in c(FALSE, TRUE)) {
   options(".dauphin.long.vec" = .dauphin.long.vec)
   x <- dauphin_mobile1("0400 000 456")
