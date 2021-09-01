@@ -58,8 +58,9 @@ appears to have international prefixes already.
 
 \describe{
 \item{\code{dauphin_mobile}}{An integer vector, the integer representation of
-the mobile phone. If the calling code is required or requested, a raw vector
-is additionally provided.}
+the mobile phone. If the calling code is required or requested, a list
+of two vectors is returned, with the second element a raw vector with
+a representation of the corresponding number.}
 \item{\code{dauphin_landline}}{An integer vector, the integer representation of the landline.}
 \item{\code{dauphin_mobile_landline}}{A list of two vectors with the
 mobile and landline vectors respectively, even if the character
