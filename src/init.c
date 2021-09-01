@@ -16,7 +16,6 @@ extern SEXP Cgsub_09(SEXP);
 extern SEXP CStandardMobile(SEXP);
 extern SEXP DecodeRawCC(SEXP, SEXP);
 extern SEXP EncodeIntCC(SEXP, SEXP);
-extern SEXP lgl2raw(SEXP, SEXP);
 extern SEXP PrintMobile(SEXP, SEXP, SEXP);
 
 static const R_CallMethodDef CallEntries[] = {
@@ -28,7 +27,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"CStandardMobile",   (DL_FUNC) &CStandardMobile,   1},
     {"DecodeRawCC",       (DL_FUNC) &DecodeRawCC,       2},
     {"EncodeIntCC",       (DL_FUNC) &EncodeIntCC,       2},
-    {"lgl2raw",           (DL_FUNC) &lgl2raw,           2},
     {"PrintMobile",       (DL_FUNC) &PrintMobile,       3},
     {NULL, NULL, 0}
 };

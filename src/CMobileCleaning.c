@@ -493,7 +493,6 @@ SEXP PrintMobile(SEXP Mob, SEXP Ccd, SEXP doLongVec) {
       continue;
     }
 
-
     unsigned int ucci = 61;
     if (use_ccd) {
       unsigned int uccj = ccd[i];
