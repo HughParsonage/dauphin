@@ -27,4 +27,6 @@ dauphin_mobile_landline(c("0412 345 678", "6532 1234"),
                         default_area_code = 3)
 ```
 
+An unexported function `format_dauphin_mobile` is also temporarily available
+for a standard character format.
 
