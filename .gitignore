@@ -14,3 +14,4 @@
 !.github/
 !.github/workflows/
 !.github/workflows/main.yml
+!*.md
