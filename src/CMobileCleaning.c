@@ -525,7 +525,7 @@ SEXP PrintMobile(SEXP Mob, SEXP Ccd, SEXP doLongVec) {
       }
     }
     if (long_vec) {
-      Rprintf("%td: +%d %03d %03d %03d\n", (long long)i + 1, ucci, m1, m2, m3);
+      Rprintf("%lld: +%d %03d %03d %03d\n", (long long)i + 1, ucci, m1, m2, m3);
     } else {
       if (i < INT_MAX) {
         Rprintf("%d: +%d %03d %03d %03d\n", (int)i + 1, ucci, m1, m2, m3);
