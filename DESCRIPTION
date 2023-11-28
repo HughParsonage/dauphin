@@ -1,6 +1,6 @@
 Package: dauphin
 Title: Compact Standard for Australian Phone Numbers
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: 
     person(given = "Hugh",
            family = "Parsonage",
@@ -14,6 +14,6 @@ Description: Phone numbers are often represented as strings because there
 License: GPL-2
 Encoding: UTF-8
 Suggests: tinytest
-RoxygenNote: 7.1.1
+RoxygenNote: 7.2.0
 Imports: 
     utils
