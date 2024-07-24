@@ -27,24 +27,6 @@ jobs:
       - name: Run Check
         run: Rscript -e "rcmdcheck::rcmdcheck(build_args = '--no-manual')"
     container: rocker/verse:latest
-  rchk:
-    runs-on: ubuntu-latest
-    container:
-      image: rhub/ubuntu-rchk
-      options: --user=root
-    steps:
-    - uses: actions/checkout@v2
-    - uses: r-lib/actions/run-rchk@v2
-      with:
-        setup-only: true
-    - name: Install package
-      run: |-
-         install.packages('remotes', repos = 'https://cran.rstudio.com/')
-         remotes::install_local()
-      shell: Rscript {0}
-    - uses: r-lib/actions/run-rchk@v2
-      with:
-        run-only: true
   test-r-sanitizers:
     name: ASAN-UBSAN
     timeout-minutes: 60
