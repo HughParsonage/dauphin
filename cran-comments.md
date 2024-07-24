@@ -1,4 +1,4 @@
-LTO error has been fixed (misspelled PACKAGE = in .Call )
+STRING_PTR to STRING_PTR_RO reflecting new CRAN API rules
 
 ## Test environments
 * local R installation, R 4.0.0
